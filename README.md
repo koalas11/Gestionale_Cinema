@@ -4,10 +4,13 @@ Lo scheletro propone degli esempi dei tre componenti da cui partire.
 
 ## Componenti del gruppo
 
-* Nome Cognome (Matricola) <email>
-* ...
+* Marco Sanvito (886493) m.sanvito17@campus.unimib.it
+* Emre Tugrul (886027) e.tugrul@campus.unimib.it
+* Andrea Falbo (887525) a.falbo7@campus.unimib.it
 
 ## Compilazione ed esecuzione
+
+Per facilitare l'esecuzione locale è presente il setupServer.bat
 
 Il server Web e il database sono dei progetti Java che utilizano Maven per gestire le dipendenze, la compilazione e l'esecuzione. È necessario eseguire in seguente i seguenti obiettivi per compilare ed eseguire: `clean`, che rimuove la cartella `target`, `compile` per compilare e `exec:java` per avviare il
 componente.
