@@ -1,208 +1,272 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <title>Homepage | Syncronauts Cinema </title>
-    <link rel="stylesheet" href="style.css">
-  </head>
+    <head>
+        <title>Homepage | Syncronauts Cinema </title>
+        <link rel="stylesheet" href="style.css">
+    </head>
 
-  <body>
+    <body>
 
-    <header>
-        <h1>The Syncronauts Cinema</h1>
-        <nav>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Programmazione</a></li>
-            <li><a href="#">Prenotazioni</a></li>
-            <li><a href="#">Contatti</a></li>
-          </ul>
-        </nav>
-    </header>
+        <!-- Banner -->
+        <header>
+            <h1>The Syncronauts Cinema</h1>
+            <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Now Playing</a></li>
+                <li><a href="#">Events</a></li>
+                <li><a href="#">About</a></li>
+            </ul>
+            </nav>
+        </header>
     
-    <div class="container">
-        <h2>Aggiungi una prenotazione</h2>
-    
-        <form id="Search" action="/movies" method="POST">
+        <div class="container">
+            <h2>Search a Film</h2>
+        
+            <form id="search-movies" action="/movies" method="GET">
                 <label for="film">Select a movie:</label>
                 <select id="film">
-                    <!-- Options will be dynamically generated -->
+                    <!--
+                    <option value="" selected disabled></option>
+                    <option value="film1">Omar alla conquista della Grecia</option>
+                    -->
                 </select>
-                <label for="day">Select a day:</label>
-                <select id="day">
-                    <!-- Options will be dynamically generated -->
+            </form>
+
+            <form id="search-dates" action="${API_URI}/movies/${movieId}/dates" method="GET">
+                <label for="date">Select a day:</label>
+                <select id="date">
+                    <!--
+                    <option value="" selected disabled></option>
+                    <option value="day1">30/06/2023</option>
+                    -->
                 </select>
+            </form>
+
+            <form id="search-times" action="${API_URI}/movies/${movieId}/dates/${dates}/times" method="GET">
                 <label for="time">Select a time:</label>
                 <select id="time">
-                    <!-- Options will be dynamically generated -->
+                    <!--
+                    <option value="" selected disabled></option>
+                    <option value="time1">14:53</option>
+                    -->
                 </select>
+            </form>
+            
+            <form id="search-hall" action="${API_URI}/movies/${movieId}/dates/${dates}/times/${times}/hall" method="GET">
                 <label for="hall">Select a hall:</label>
                 <select id="hall">
-                    <!-- Options will be dynamically generated -->
+                    <!--
+                    <option value="" selected disabled></option>
+                    <option value="hall1">Hall 1</option>
+                    <option value="hall2">Hall 2</option>
+                    <option value="hall3">Hall 3</option>
+                    <option value="hall4">Hall 4</option>
+                    <option value="hall5">Hall 5</option>
+                    -->
                 </select>
+            </form>
             <button id="search">Search</button>
-        </form>
+        </div>
         
-    </div>
-
-    <script>
-        //metodi GET
+        
 
 
-        const API_URI = "http://localhost:8080";
 
-        // getMovies restituisce l'elenco dei film.
-        async function getMovies() {
-            const endpoint = `${API_URI}/movies`;
-            const response = await fetch(endpoint);
-            if (!response.ok) {
+        <!--
+        <div class="container2">
+        <h2>Edit Reservation</h2>
+            <form id="Edit Reservation">
+                <label for="booking-code">Enter the reservation code:</label>
+                <select id="booking-code">
+                </select>
+                <button id="edit">Edit Reservation</button>        
+            </form>
+        </div>
+        -->
+
+
+        <script>
+            
+            //metodi GET
+            const API_URI = "http://localhost:8080";
+
+            // getMovies restituisce l'elenco dei film.
+            async function getMovies() {
+                const endpoint = `${API_URI}/movies`;
+
+                const response = await fetch(endpoint);
+
+                if (!response.ok)
                 throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+
+                return await response.json();
             }
-            return await response.json();
-        }
 
-        //getMoviesDay dato un film, restituisce il giorno.
-        async function getMoviesDay(movieId) {
-            const endpoint = `${API_URI}/movies/${movieId}`;
-            const response = await fetch(endpoint);
-            if (!response.ok) {
-                throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+            //getMoviesDay dato un film, restituisce il giorno.
+            async function getMoviesDates(movieId) {
+                const endpoint = `${API_URI}/movies/${movieId}/dates`;
+                const response = await fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+                }
+                return await response.json();
+
             }
-            return await response.json();
 
-        }
-
-        // getMoviesDayTime dato un film e un giorno, restituisce l'orario.
-        async function getMoviesDayTime(movieId, day){
-            const endpoint = `${API_URI}/movies/${movieId}/day/${day}`;
-            const response = await fetch(endpoint);
-            if (!response.ok) {
-                throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+            // getMoviesDayTime dato un film e un giorno, restituisce l'orario.
+            async function getMoviesDatesTimes(movieId, date){
+                const endpoint = `${API_URI}/movies/${movieId}/dates/${date}/times`;
+                const response = await fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+                }
+                return await response.json();
             }
-            return await response.json();
-        }
 
-        // getMoviesDayTimeHall dato un film, giorno e orario, restituisce una sala.
-        async function getMoviesDayTimeHall(movieId, day, time){
-            const endpoint = `${API_URI}/movies/${movieId}/day/${day}/time/${time}`;
-            const response = await fetch(endpoint);
-            if (!response.ok) {
-                throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+            // getMoviesDayTimeHall dato un film, giorno e orario, restituisce una sala.
+            async function getMoviesDatesTimesHalls(movieId, date, time){
+                const endpoint = `${API_URI}/movies/${movieId}/dates/${date}/times/${time}/halls`;
+                const response = await fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+                }
+                return await response.json();
             }
-            return await response.json();
-        }
 
-        //metodo POST da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
+            // getMoviesDayTimeHallSeats dato un film, giorno e orario, restituisce una sala.
+            async function getMoviesDatesTimesHallsSeats(movieId, date, time, hall){
+                const endpoint = `${API_URI}/movies/${movieId}/dates/${date}/times/${time}/halls/${hall}/seats`;
+                const response = await fetch(endpoint);
+                if (!response.ok) {
+                    throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+                }
+                return await response.json();
+            }
 
-        // newMovie aggiunge una prenotazione al server, restituisce il nuovo ID.
-        async function newReservation(movieID) {
-            const endpoint = `${API_URI}/movies`; //--> da cambiare probabilmente
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(movieID)
+
+            //metodo POST da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
+
+            // newMovie aggiunge una prenotazione al server, restituisce il nuovo ID.
+            async function newReservation(movieID) {
+                const endpoint = `${API_URI}/movies`; //--> da cambiare probabilmente
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(movieID)
+                });
+
+                if (!response.ok)
+                    throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+
+                const location = response.headers.get("Location");
+                return location.split("/").pop();
+            }
+
+            // Funzione di utilità che mostra l'errore nella console e in un alert del browser.
+            function onError(msg, error) {
+                const out = `${msg}: ${error}`;
+                console.error(out);
+                alert(out);
+            }
+
+            // newContactDOM viene eseguita all'invio del from. Aggiunge un nuovo
+            // contatto, prima inviandolo al server e poi mettendolo nella tabella.
+            async function newContactDOM(event) {
+                // Evito che il form venga davvero inviato.
+                event.preventDefault();
+
+                // Recuperi i dati da inviare dal form.
+                const name = document.getElementById("input-name");
+                const number = document.getElementById("input-number");
+                let contact = {
+                "name": name.value,
+                "number": number.value
+                };
+
+                // Pulisco i campi del form, ormai non servono più.
+                name.value = "";
+                number.value = "";
+
+                try {
+                // Creo il nuovo oggetto e lo invio al server, restituisce il
+                // nuovo ID.
+                contact["id"] = await newContact(contact)
+
+                // Ottengo il nuovo contatto con tutte le informazioni.
+                contact = await getContact(contact["id"]);
+
+                // Infine lo aggiungo alla tabella.
+                addContactDOM(contact);
+                } catch (error) {
+                onError("Failed to add a new user", error);
+                }
+            }
+
+            // addContactDOM aggiunge il contatto fornito in una nuova riga della tabella.
+            function addContactDOM(contact) {
+                // Selezione di <tbody> e aggiunta di una nuova riga.
+                const tbody = document.getElementById("table-body");
+                const row = tbody.insertRow();
+
+                // Aggiunta dell'ID.
+                const id = row.insertCell();
+                id.setAttribute("align", "center");
+                const idText = document.createTextNode(contact["id"]);
+                id.appendChild(idText);
+
+                // Aggiunta del nome.
+                const name = row.insertCell();
+                name.setAttribute("align", "center");
+                const nameText = document.createTextNode(contact["name"]);
+                name.appendChild(nameText);
+
+                // Aggiunta del numero.
+                const number = row.insertCell();
+                number.setAttribute("align", "center");
+                const numberText = document.createTextNode(contact["number"]);
+                number.appendChild(numberText);
+            }
+
+            // Ho definito init come una funzione asincrona, per cui l'esecuzione è slegata
+            // dal flusso sequenziale dello script. Il browser si occupa di gestire queste
+            // funzioni, che prima o poi verranno eseguite e completate.
+            window.onload = init();
+
+            async function init() {
+                json = await getMovies();
+                console.log(json);
+
+                // Aggiungo l'handler per l'evento di invio al form.
+                const form = document.getElementById("film");
+                //form.addEventListener("submit", newContactDOM);
+            }
+
+            //funzione per visualizzare solo una table
+            document.getElementById('search').addEventListener('click', function (event) {
+                event.preventDefault();
+                var hall = document.getElementById('hall').value;
+                var hallTable = document.getElementById(hall);
+                var allTables = document.getElementsByClassName('hall-table');
+                for (var i = 0; i < allTables.length; i++) {
+                    allTables[i].style.display = 'none';
+                }
+                hallTable.style.display = 'block';
             });
 
-            if (!response.ok)
-                throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
-
-            const location = response.headers.get("Location");
-            return location.split("/").pop();
-        }
-
-        // Funzione di utilità che mostra l'errore nella console e in un alert del browser.
-        function onError(msg, error) {
-            const out = `${msg}: ${error}`;
-            console.error(out);
-            alert(out);
-        }
-
-        //sicuro sbagliato da vedere
-        // newPrenotazioneDOM viene eseguita all'invio del form. Aggiunge una nuova
-        // prenotazione, prima inviandolo al server e poi mettendolo nella tabella.
-        async function newPrenotazioneDOM(event) {
-            // Evito che il form venga davvero inviato.
-            event.preventDefault();
-
-            // Recuperi i dati da inviare dal form.
-            const film = document.getElementById("film");
-            const day = document.getElementById("day");
-            const time = document.getElementById("time");
-            const hall = document.getElementById("hall");
-            let reservation = {
-            "film": film.value,
-            "day": day.value,
-            "time": time.value,
-            "hall": hall.value
-            };
-
-            // Pulisco i campi del form, ormai non servono più.
-            film.value = "";
-            day.value = "";
-            time.value = "";
-            hall.value = "";
-
-            try {
-            // Creo la nuova prenotazione e la invio al server, restituisce ID.
-            reservation["movieId"] = await newReservation(reservation)
-
-            // Ottengo la prenotazione con tutte le informazioni
-            reservation = await getMoviesDayTimeHall(reservation["movieId"]);
-
-            // Infine lo aggiungo alla tabella.
-            addContactDOM(reservation);
-            } catch (error) {
-            onError("Failed to add the reservation: ", error);
+            // Gestione della selezione dei posti
+            var seats = document.getElementsByClassName("seat");
+            
+            for (var i = 0; i < seats.length; i++) {
+                seats[i].addEventListener("click", function() {
+                    this.classList.toggle("selected");
+                });
             }
-        }
 
-        //tutto da fare
-        // addReservationDOM aggiunge la prenotazione fornita in una nuova riga della tabella.
-        function addReservationDOM(contact) {
-            // Selezione di <tbody> e aggiunta di una nuova riga.
-            const tbody = document.getElementById("table-body");
-            const row = tbody.insertRow();
-
-            // Aggiunta dell'ID del film.
-            const id = row.insertCell();
-            id.setAttribute("align", "center");
-            const idText = document.createTextNode(prenotazione["movieId"]);
-            id.appendChild(idText);
-
-            // Aggiunta del .
-            const name = row.insertCell();
-            name.setAttribute("align", "center");
-            const nameText = document.createTextNode(prenotazione["day"]);
-            name.appendChild(nameText);
-
-            // Aggiunta del numero.
-            const number = row.insertCell();
-            number.setAttribute("align", "center");
-            const numberText = document.createTextNode(contact["number"]);
-            number.appendChild(numberText);
-        }
-
-        // Ho definito init come una funzione asincrona, per cui l'esecuzione è slegata
-        // dal flusso sequenziale dello script. Il browser si occupa di gestire queste
-        // funzioni, che prima o poi verranno eseguite e completate.
-        window.onload = init();
-
-        async function init() {
-            // getUsers è asincrona, per cui restituisce una Promise che verrà eseguita
-            // in modo asincrono. Il metodo then permette di eseguire due funzioni: la
-            // prima in caso di successo, la seconda in caso di errore.
-            getContacts().then((users) => users.forEach(addContactDOM),
-            (error) => onError("Failed to get users", error));
-
-            // Aggiungo l'handler per l'evento di invio al form.
-            const form = document.getElementById("add-contact");
-            form.addEventListener("submit", newContactDOM);
-        }
-
-    </script>
-  </body>
-
+        </script>
+    </body>
 </html>
 

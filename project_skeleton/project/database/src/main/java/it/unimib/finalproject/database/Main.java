@@ -23,7 +23,7 @@ public class Main {
      */
     public static void startServer() {
         try {
-            var server = new ServerSocket(PORT);
+			var server = new ServerSocket(PORT);
 
             System.out.println("Database listening at localhost:" + PORT);
             while (true)
@@ -73,15 +73,20 @@ public class Main {
                 out.close();
                 client.close();
             } catch (IOException e) {
+            	System.err.println(e.getMessage());
                 System.err.println(e);
             }
         }
         
         /**
-         * Esegue il comando richiesto e restituisce la risposta
+         * Method for executing the requested command.
+         *
+         * @param input input of the command.
+         *
+         * @return answer message.
          */
         private String executeCommand(String input) {
-        	Pattern pattern = Pattern.compile("[a-z]*", Pattern.CASE_INSENSITIVE);
+        	Pattern pattern = Pattern.compile("\\A[a-z]+", Pattern.CASE_INSENSITIVE);
         	Matcher matcher = pattern.matcher(input);
         	matcher.find();
         	
@@ -104,6 +109,17 @@ public class Main {
         			break;
         		}
         		
+        		case "mset": {
+        			var list = parseMultiple(args);
+        			
+        			if (list.size() % 2 == 0)
+        				database.mSet(list);
+        			else
+        				message = "[false, \"Wrong Number of Input\"]";
+        			
+        			break;
+        		}
+        		
         		case "setif": {        			
         			var result = parse(args, 3);
         			String key = result[0];
@@ -112,6 +128,18 @@ public class Main {
         			
         			if (!database.setIf(key, value, oldValue))
         				message = "[false, \"Different Value\"]";
+        			break;
+        		}
+        		
+        		case "msetif": {        			
+        			var list = parseMultiple(args);
+        			
+        			if (list.size() % 3 == 0)
+            			if (!database.mSetIf(list))
+            				message = "[false, \"Different Value\"]";
+        			else
+        				message = "[false, \"Wrong Number of Input\"]";
+        			
         			break;
         		}
         		
@@ -124,7 +152,7 @@ public class Main {
         		}
         		
         		case "mget": {
-        			var keys = parseKeys(args);
+        			var keys = parseMultiple(args);
 
         			message = "[true," + database.mGet(keys) + "]";
         			break;
@@ -163,7 +191,7 @@ public class Main {
         			try {
 	        			var result = parse(args, 3);
 	        			String key = result[0];
-	        			int index = Integer.parseInt(result[1]);
+	        			String index = result[1];
 	        			String value = result[2];
 	        			
 	        			database.setL(key, index, value);
@@ -175,11 +203,27 @@ public class Main {
         			break;
         		}
         		
-        		case "setifl": {  
+        		case "msetl": {
+        			try {
+            			var list = parseMultiple(args);
+            			
+            			if (list.size() % 3 == 0)
+            				database.mSetL(list);
+            			else
+            				message = "[false, \"Wrong Number of Input\"]";
+        			} catch (IndexOutOfBoundsException e) {
+        				message = "[false, \"Index Out of Bounds\"";
+        			} catch (NumberFormatException e) {
+        				message = "[false, \"Wrong Input Index\"";
+        			}
+        			break;
+        		}
+        		
+        		case "setifl": {
         			try {
 	        			var result = parse(args, 4);
 	        			String key = result[0];
-	        			int index = Integer.parseInt(result[1]);
+	        			String index = result[1];
 	        			String value = result[2];
 	        			String Oldvalue = result[3];
 	        			
@@ -187,6 +231,23 @@ public class Main {
             				message = "[false, \"Different Value\"";
         			} catch (IndexOutOfBoundsException e) {
         				message = "[false, \"Index Out Of Bounds\"]";
+        			} catch (NumberFormatException e) {
+        				message = "[false, \"Wrong Input Index\"";
+        			}
+        			break;
+        		}
+        		
+        		case "msetifl": {
+        			try {
+            			var list = parseMultiple(args);
+            			
+            			if (list.size() % 4 == 0)
+                			if(!database.mSetIfL(list))
+                				message = "[false, \"Different Value\"";
+            			else
+            				message = "[false, \"Wrong Number of Input\"]";
+        			} catch (IndexOutOfBoundsException e) {
+        				message = "[false, \"Index Out of Bounds\"";
         			} catch (NumberFormatException e) {
         				message = "[false, \"Wrong Input Index\"";
         			}
@@ -218,7 +279,7 @@ public class Main {
         		}
         		
         		case "mgetall": {
-        			var keys = parseKeys(args);
+        			var keys = parseMultiple(args);
 
         			message = "[true," + database.mGetAll(keys) + "]";
         			break;
@@ -240,9 +301,17 @@ public class Main {
 			return message;
         }
 		
+        /**
+         * Method for parsing a number of values.
+         *
+         * @param input input of the command.
+         * @param number number of the values to parse.
+         *
+         * @return Array of number values.
+         */
 		private String[] parse(String input, int number) {
 			var result = new String[number];
-			String key = parseKey(input);
+			String key = parseValue(input);
 
 			String parsed = key;
 			
@@ -250,7 +319,8 @@ public class Main {
 	        	if (parsed == null)
 	        		throw new WrongInputException("Wrong Input Key");
 	        	
-	        	String value = parseValue(input, parsed.length() + input.indexOf(parsed));
+	        	
+	        	String value = parseValue(input.substring(parsed.length() + input.indexOf(parsed)).strip());
 	        	
 	        	parsed = parsed.replaceAll("^\"|\"$", "");
 	        	result[i - 1] = parsed;
@@ -270,7 +340,14 @@ public class Main {
 			return result;
 		}
         
-        private String parseKey(String input) {
+        /**
+         * Method for parsing a value.
+         *
+         * @param input input to parse.
+         *
+         * @return parsed value.
+         */
+        private String parseValue(String input) {
         	Pattern pattern = Pattern.compile("\\A\".+\"", Pattern.CASE_INSENSITIVE);
         	Matcher matcher = pattern.matcher(input);
         	
@@ -287,17 +364,20 @@ public class Main {
     		return null;
         }
         
-        private String parseValue(String input, int offset) {
-			return parseKey(input.substring(offset).strip());
-        }
-        
-        private ArrayList<String> parseKeys(String input) {
+        /**
+         * Method for parsing multiple values.
+         *
+         * @param input input of the command.
+         *
+         * @return list of parsed values.
+         */
+        private ArrayList<String> parseMultiple(String input) {
         	ArrayList<String> list = new ArrayList<String>();
         	String key;
         	int offset = 0;
         	
         	do {
-        		key = parseKey(input.substring(offset).strip());
+        		key = parseValue(input.substring(offset).strip());
         		if (key != null) {
 					offset += key.length() + 1;
 					list.add(key.replaceAll("^\"|\"$", ""));

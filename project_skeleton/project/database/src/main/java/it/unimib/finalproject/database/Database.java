@@ -6,8 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class Database {
-	private List<ConcurrentHashMap<String, String>> stringDB;
-	private List<ConcurrentHashMap<String, ArrayList<AtomicReference<String>>>> listDB;
+	private static List<ConcurrentHashMap<String, String>> stringDB;
+	private static List<ConcurrentHashMap<String, ArrayList<AtomicReference<String>>>> listDB;
 	private static final int MaxStringDB = 5;
 	private static final int MaxListDB = 5;
 	
@@ -26,11 +26,11 @@ public class Database {
 	}
 	
     /**
-     * Metodo per ottenere l'HashMap delle stringhe.
+     * Method to get the HashMap of Strings.
      *
-     * @param key chiave per la ricerca dell'HashMap in cui e' salvata.
+     * @param key key for finding the HashMap associated.
      *
-     * @return L'HashMap in cui e' salvata.
+     * @return HashMap where key is stored.
      */
 	private ConcurrentHashMap<String, String> getSDB(String key) {
 		int hashCode = key.hashCode();
@@ -40,11 +40,11 @@ public class Database {
 	}
 	
     /**
-     * Metodo per ottenere l'HashMap delle liste.
+     * Method to get the HashMap of Lists.
      *
-     * @param key chiave per la ricerca dell'HashMap in cui e' salvata.
+     * @param key key for finding the HashMap associated.
      *
-     * @return L'HashMap in cui e' salvata
+     * @return HashMap where key is stored.
      */
 	private ConcurrentHashMap<String, ArrayList<AtomicReference<String>>> getLDB(String key) {
 		int hashCode = key.hashCode();
@@ -59,10 +59,10 @@ public class Database {
 	 */
 	
     /**
-     * Metodo per impostare (o sostituire nel caso sia gia' presente la chiave) un valore.
+     * Method to set (or replace) a value associated with key.
      *
-     * @param key chiave a cui associare un valore
-     * @param value valore da associare alla chiave
+     * @param key key in the HashMap.
+     * @param value value to assoicate with key.
      *
      */
 	public void set(String key, String value) {
@@ -72,19 +72,60 @@ public class Database {
 	}
 	
     /**
-     * Metodo per impostare (o sostituire nel caso sia gia' presente la chiave) un valore
-     * solo se oldValue corrisponde al valore associato alla chiave.
+     * Method to set (or replace) a value associated with key for multiple keys.
      *
-     * @param key chiave a cui associare un valore
-     * @param newValue nuovo valore da associare alla chiave
-     * @param oldValue vecchio valore associato alla chiave
+     * @param list list made of multiple key, value.
      *
-     * @return true se ha avuto successo
+     */
+	public void mSet(ArrayList<String> list) {
+		for (int i = 0; i < list.size(); i++) {
+			set(list.get(i), list.get(++i));
+		}
+	}
+	
+    /**
+     * Method to set (or replace) a newValue associated with key only if the value at key is oldValue.
+     *
+     * @param key key in the HashMap. 
+     * @param newValue newValue for the key.
+     * @param oldValue oldValue associated with key.
+     *
+     * @return true if it was successful else false.
      */
 	public boolean setIf(String key, String newValue, String oldValue) {
 		var db = getSDB(key);
 		
 		return db.replace(key, oldValue, newValue);
+	}
+	
+    /**
+     * Method to set (or replace) a newValue associated with key only if the value at key is oldValue for multiple keys.
+     *
+     * @param list list made of multiple key, newValue, oldValue.
+     *
+     * @return true if it was successful else false.
+     */
+	public boolean mSetIf(ArrayList<String> list) {
+		String key, value, oldvalue;
+		var listR = new ArrayList<String>();
+		boolean check = true;
+		
+		for (int i = 0; i < list.size(); i++) {
+			key = list.get(i);
+			value = list.get(++i);
+			oldvalue = list.get(++i);
+			check = setIf(key, value, oldvalue);
+			
+			if (!check)
+				break;
+			listR.add(key);
+			listR.add(oldvalue);
+		}
+		
+		if (!check)
+			mSet(listR);
+		
+		return check;
 	}
 	
     /**
@@ -110,7 +151,7 @@ public class Database {
     /**
      * Method to get the value associated to multiple keys.
      *
-     * @param keys List of keys.
+     * @param keys List of multiple keys.
      *
      * @return The values associated with each key and null if there was none for that key.
      */
@@ -196,12 +237,24 @@ public class Database {
      * @param value value to add to the list at position index.
      *
      */
-	public void setL(String key, int index, String value) {
+	public void setL(String key, String index, String value) {
 		var db = getLDB(key);
 		
 		var list = db.get(key);
 		
-		list.set(index, new AtomicReference<String>(value));
+		list.set(Integer.parseInt(index), new AtomicReference<String>(value));
+	}
+	
+    /**
+     * Method to set (or replace if it was already associated a value at the key) a new value at index for multiple keys.
+     *
+     * @param list list made of multiple key, index, value.
+     *
+     */
+	public void mSetL(ArrayList<String> list) {
+		for (int i = 0; i < list.size(); i++) {
+			setL(list.get(i), list.get(++i), list.get(++i));
+		}
 	}
 	
     /**
@@ -215,12 +268,45 @@ public class Database {
      *
      * @return true if it was successful or false if not.
      */
-	public boolean setIfL(String key, int index, String newValue, String oldValue) {
+	public boolean setIfL(String key, String index, String newValue, String oldValue) {
 		var db = getLDB(key);
 		
 		var list = db.get(key);
 		
-		return list.get(index).compareAndSet(oldValue, newValue);
+		return list.get(Integer.parseInt(index)).compareAndSet(oldValue, newValue);
+	}
+	
+    /**
+     * Method to set into the list associated with key, a value in the position index
+     * only if at that position there was the value oldValue for multiple keys.
+     *
+     * @param list list made of multiple key, index, value, oldvalue.
+     *
+     * @return true if it was successful or false if not.
+     */
+	public boolean mSetIfL(ArrayList<String> list) {
+		String key, index, value, oldvalue;
+		var listR = new ArrayList<String>();
+		boolean check = true;
+		
+		for (int i = 0; i < list.size(); i++) {
+			key = list.get(i);
+			index = list.get(++i);
+			value = list.get(++i);
+			oldvalue = list.get(++i);
+			check = setIfL(key, index, value, oldvalue);
+			
+			if (!check)
+				break;
+			listR.add(key);
+			listR.add(index);
+			listR.add(oldvalue);
+		}
+		
+		if (!check)
+			mSetL(listR);
+		
+		return check;
 	}
 	
     /**
@@ -280,7 +366,7 @@ public class Database {
 			result += "]";
 		}
 		
-		return result;
+		return  result;
 	}
 	
     /**

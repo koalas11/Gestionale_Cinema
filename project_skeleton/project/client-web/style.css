@@ -1,4 +1,4 @@
-
+/* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -6,24 +6,22 @@
   }
   
   body {
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     background-color: #f2f2f2;
     padding: 20px;
   }
   
+  /* Header */
   header {
     text-align: center;
     margin-bottom: 0px;
-    background-image: url('../client-web/images/bg.jpg'); 
+    background-image: url('../client-web/images/bg.jpg');
     background-size: cover;
     background-position: center;
     padding: 100px 100px;
     border-radius: 10px;
-
   }
-
-
-
+  
   h1 {
     margin-bottom: 20px;
     font-size: 36px;
@@ -31,41 +29,7 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   }
   
-
-  
-  form{
-    margin-bottom: 20px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-  }
-  
-  input[type="text"] {
-    width: 30%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  input[type="submit"] {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: white;
-    border: 1px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-  
-  input[type="submit"]:hover {
-    background-color: #45a049;
-  }
-
+  /* Navigation */
   nav ul {
     list-style-type: none;
     text-align: center;
@@ -85,9 +49,10 @@
   nav ul li a:hover {
     color: rgb(179, 86, 86);
   }
-
+  
+  /* Container */
   .container {
-    max-width: 400px;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     background-color: #f5f5f5;
@@ -95,7 +60,7 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   }
   
-   h2 {
+  h2 {
     text-align: center;
     margin-bottom: 10px;
     font-size: 24px;
@@ -122,6 +87,7 @@
   }
   
   button {
+    margin-top: 20px;
     display: block;
     width: 100%;
     padding: 10px;
@@ -131,32 +97,49 @@
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-  }
+}
   
-  button:hover {
+button:hover {
     background-color: #45a049;
-  }
+}
   
-  /*
-  #results {
-    margin-top: 20px;
-  }
+  /* Seat Styles */
   
-  .seats {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+}
   
-  .seats div {
+.seat {
     width: 20px;
     height: 20px;
+    border-radius: 50%;
+    background-color: gray;
+    display: inline-block;
     margin: 5px;
-    background-color: #ccc;
-    border-radius: 5px;
-  }
+    cursor: pointer;
+}
   
-  .seats div.selected {
-    background-color: #4caf50;
-  }
-  */
+.seat.selected {
+    background-color: blue;
+}
+  
+.hall-table {
+    display: none;
+    margin: 30px;
+    text-align: center;
+}
+  
+.cinema-screen {
+    width: 300px;
+    height: 5px;
+    background-color: black;
+    border: 3px solid #333;
+    border-radius: 2px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    margin: 0 auto;
+    margin-top: 1px;
+}
+  

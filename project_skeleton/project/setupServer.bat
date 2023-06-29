@@ -1,6 +1,6 @@
-cd "C:\Users\Emre\Documents\project_skeleton\project\database"
+cd "%~dp0database"
 start mvnw.cmd clean compile exec:java
 
-cd "C:\Users\Emre\Documents\project_skeleton\project\server-web"
+cd "%~dp0server-web"
 start mvnw.cmd clean compile exec:java
 

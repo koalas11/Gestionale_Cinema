@@ -43,6 +43,12 @@ public class SampleClient {
                 in.readLine();
             }
 
+            String halls = "h1,h2,h3";
+            for (String hall : halls.split(",")) {
+                out.println("add halls " + hall);
+                in.readLine();
+            }
+
  
             // TODO aggiungi nel for (dinamico)
             // adding films to the database and linking an ID to the films
@@ -99,6 +105,37 @@ public class SampleClient {
             in.readLine();
             out.println("set t7 22:00");
             in.readLine();
+
+            // adding halls to the times
+            out.println("add t1 h1");
+            in.readLine();
+            out.println("add t1 h2");
+            in.readLine();
+            out.println("add t2 h1");
+            in.readLine();
+            out.println("add t2 h3");
+            in.readLine();
+            out.println("add t3 h1");
+            in.readLine();
+            out.println("add t3 h2");
+            in.readLine();
+            out.println("add t4 h1");
+            in.readLine();
+            out.println("add t4 h2");
+            in.readLine();
+            out.println("add t5 h3");
+            in.readLine();
+            out.println("add t5 h2");
+            in.readLine();
+            out.println("add t6 h1");
+            in.readLine();
+            out.println("add t6 h3");
+            in.readLine();
+            out.println("add t7 h1");
+            in.readLine();
+            out.println("add t7 h2");
+            in.readLine();
+
 
             // Close the connection
             socket.close();
