@@ -1,0 +1,6 @@
+it\unimib\finalproject\server\Main.class
+it\unimib\finalproject\server\Booking.class
+it\unimib\finalproject\server\StringMessageBodyWriter.class
+it\unimib\finalproject\server\SampleClient.class
+it\unimib\finalproject\server\ServerAPI.class
+it\unimib\finalproject\server\CORSFilter.class
