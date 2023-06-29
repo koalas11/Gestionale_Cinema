@@ -5,16 +5,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Paths;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SampleClient {
     private static final String SERVER_HOST = "localhost";
     private static final int SERVER_PORT = 3030;
-
+    private static final String PATH = "\\project\\server-web\\src\\main\\java\\it\\unimib\\finalproject\\server\\";
     public static void testConnect() {
+        
         try {
             // Connect to the server
             Socket socket = new Socket(SERVER_HOST, SERVER_PORT);
-
+            
+            // Create mapper for JSON serialization/deserialization
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode preloadedJson = null;
             // Wait for the connection to be established
             while(!socket.isConnected());
 
@@ -23,6 +31,19 @@ public class SampleClient {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            try {
+                // convert a JSON string to an ObjectNode
+                preloadedJson = mapper.readValue(Paths.get(System.getProperty("user.dir") + PATH + "preloadedData.json").toFile(), ObjectNode.class);
+
+                // print book
+                // System.out.println(preloadedJson.toPrettyString());
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+
+            
             // Send commands to the server and read responses
 
             String films = "Spiderman,Osu,Rem";

@@ -23,11 +23,11 @@ public class Main {
      */
     public static void startServer() {
         try {
-			try (var server = new ServerSocket(PORT)) {
-				System.out.println("Database listening at localhost:" + PORT);
-				while (true)
-				    new Handler(server.accept(), database).start();
-			}
+			var server = new ServerSocket(PORT);
+
+            System.out.println("Database listening at localhost:" + PORT);
+            while (true)
+                new Handler(server.accept(), database).start();
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -177,6 +177,16 @@ public class Main {
         			String value = result[1];
         			
         			database.add(key, value);
+        			break;
+        		}
+        		
+        		case "madd": {       			
+        			var list = parseMultiple(args);
+        			
+        			if (list.size() > 1)
+        				database.mAdd(list);
+        			else
+        				message = "[false, \"Wrong Input Number\"]";
         			break;
         		}
         		
@@ -405,4 +415,3 @@ public class Main {
 		startServer();
     }
 }
-

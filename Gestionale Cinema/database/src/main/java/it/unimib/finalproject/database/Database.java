@@ -202,7 +202,26 @@ public class Database {
 		}
 			
 		list.add(new AtomicReference<String>(value));
-
+	}
+	
+    /**
+     * Method to add into the list associated with key, a value as the last element for multiple values.
+     *
+     * @param args args of key and values.
+     *
+     */
+	public void mAdd(ArrayList<String> args) {
+		String key = args.remove(0);
+		var db = getLDB(key);
+		
+		var list = db.get(key);
+		if (list == null) {
+			list = new ArrayList<AtomicReference<String>>();
+			db.put(key, list);
+		}
+		
+		for (String value : args)
+			list.add(new AtomicReference<String>(value));
 	}
 	
     /**
