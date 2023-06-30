@@ -52,7 +52,9 @@ Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati
 
 **Description**: Get the list of times in which the movie with the given id is available on the given date.
 
-**Parameters**: two parameters in the path `id` that represents the id of the movie of which the times are to be returned and `date` that represents the date of which the times are to be returned.
+**Parameters**: two parameters in the path 
+* `id` that represents the id of the movie of which the times are to be returned
+* `date` that represents the date of which the times are to be returned.
 
 **Requested Body**: no body is required.
 
@@ -67,7 +69,10 @@ Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati
 
 **Description**: Get the list of available seats for the movie with the given id on the given date at the given time.
 
-**Parameters**: three parameters in the path `id` that represents the id of the movie of which the seats are to be returned, `date` that represents the date of which the seats are to be returned and `time` that represents the time of which the seats are to be returned.
+**Parameters**: three parameters in the path 
+* `id` that represents the id of the movie of which the seats are to be returned
+* `date` that represents the date of which the seats are to be returned 
+* `time` that represents the time of which the seats are to be returned.
 
 **Requested Body**: no body is required. 
 
@@ -84,7 +89,11 @@ Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati
 
 **Description**: Book the seat with the given Booking id for the selected movie, date, time and seat.
 
-**Parameters**: four parameters in the path `id` that represents the id of the movie of which the seat is to be booked, `date` that represents the date of which the seat is to be booked, `time` that represents the time of which the seat is to be booked and `seat` that represents the seat to be booked.
+**Parameters**: four parameters in the path 
+* `id` that represents the id of the movie of which the seat is to be booked
+* `date` that represents the date of which the seat is to be booked 
+* `time` that represents the time of which the seat is to be booked 
+* `seat` that represents the seat to be booked.
 
 **Requested Body**: no body is required.
 
