@@ -1,0 +1,23 @@
+{
+    "movies" : ["The Syncronauts","The Godfather","Pulp Fiction","The Lord of the Rings: The Fellowship of the Ring","Forrest Gump","The Dark Knight","Schindler's List","Fight Club","The Untouchables","Inception","The Good, the Bad and the Ugly","Seven","Matrix","Once Upon a Time in America","Life is Beautiful","Inglourious Basterds"],
+    "dates" : ["2023-07-01","2023-07-02","2023-07-03","2023-07-04","2023-07-05","2023-07-06","2023-07-07","2023-07-08","2023-07-09","2023-07-10","2023-07-11","2023-07-12","2023-07-13","2023-07-14","2023-07-15"],
+    "times" : ["09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00"],
+    "halls" : ["hallA", "hallB", "hallC", "hallD", "hallE"],
+    "m1" : ["The Syncronauts","2023-07-01","09:00","hallA"],
+    "m2" : ["The Godfather","2023-07-02","10:00","hallB"],
+    "m3" : ["Pulp Fiction","2023-07-03","11:00","hallC"],
+    "m4" : ["The Lord of the Rings: The Fellowship of the Ring","2023-07-04","12:00","hallD"],
+    "m5" : ["Forrest Gump","2023-07-05","13:00","hallE"],
+    "m6" : ["The Dark Knight","2023-07-06","14:00","hallA"],
+    "m7" : ["Schindler's List","2023-07-07","15:00","hallB"],
+    "m8" : ["Fight Club","2023-07-08","16:00","hallC"],
+    "m9" : ["The Untouchables","2023-07-09","09:00","hallD"],
+    "m10" : ["Inception","2023-07-10","10:00","hallE"],
+    "m11" : ["The Good, the Bad and the Ugly","2023-07-11","11:00","hallA"],
+    "m12" : ["Seven","2023-07-12","12:00","hallB"],
+    "m13" : ["Matrix","2023-07-13","13:00","hallC"],
+    "m14" : ["Once Upon a Time in America","2023-07-14","14:00","hallD"],
+    "m15" : ["Life is Beautiful","2023-07-15","15:00","hallE"],
+    "m16" : ["Inglourious Basterds","2023-07-01","16:00","hallA"]
+    
+}
