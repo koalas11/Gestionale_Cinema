@@ -148,7 +148,7 @@ public class Database {
 	}
 	
     /**
-     * Method to get the value associated to multiple keys.
+     * Method to get the value associated to a key for multiple keys.
      *
      * @param keys List of multiple keys.
      *
@@ -264,7 +264,7 @@ public class Database {
 	}
 	
     /**
-     * Method to set (or replace if it was already associated a value at the key) a new value at index for multiple keys.
+     * Method to set (or replace) into the list associated with key, a new value at index for multiple keys.
      *
      * @param list list made of multiple key, index, value.
      *
@@ -388,7 +388,7 @@ public class Database {
 	}
 	
     /**
-     * Method to get the values in the list associated with keys.
+     * Method to get the values in the list associated with key for multiple keys.
      *
      * @param keys keys to retrive each list from the HashMap.
      *

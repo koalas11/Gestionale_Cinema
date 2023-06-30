@@ -132,7 +132,7 @@ public class Main {
         			break;
         		}
         		
-        		case "msetif": {        			
+        		case "msetif": {
         			var list = parseMultiple(args);
         			
         			if (list.size() % 3 == 0)
@@ -163,7 +163,7 @@ public class Main {
         			String key = parse(args, 1)[0];
         			
         			if (!database.delete(key))
-        				message = "[false, \"Key Not Found\"";
+        				message = "[false, \"Key Not Found\"]";
         			
         			break;
         		}
