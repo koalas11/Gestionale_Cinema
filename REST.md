@@ -1,6 +1,6 @@
 # Progetto Sistemi Distribuiti 2022-2023 - API REST
 
-Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati in formato JSON.
+Documentation for the REST API between the Server Web and the Client Web.
 
 ### GET 
 
@@ -85,15 +85,15 @@ Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati
 
 ### POST
 
-## `/movies/{id}/dates/{date}/times/{time}/seats/{seat}`
+## `/movies/{id}/dates/{date}/times/{time}/seats/{seats}`
 
-**Description**: Book the seat with the given Booking id for the selected movie, date, time and seat.
+**Description**: Book the seat with the given Booking id for the selected movie, date, time and seats.
 
 **Parameters**: four parameters in the path 
 * `id` that represents the id of the movie of which the seat is to be booked
 * `date` that represents the date of which the seat is to be booked 
 * `time` that represents the time of which the seat is to be booked 
-* `seat` that represents the seat to be booked.
+* `seat` that represents the seats to be booked.
 
 **Requested Body**: no body is required.
 
