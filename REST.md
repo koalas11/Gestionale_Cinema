@@ -124,9 +124,7 @@ Documentation for the REST API between the Server Web and the Client Web.
 **Response**: in case of success the JSON representation of the booking is returned.
 
 **Example response body** :
-```{```
-  ```"Id": "booking_id"```
-```}```
+```{"Id": "booking_id"}```
 
 **Returned Status Codes**:
 
