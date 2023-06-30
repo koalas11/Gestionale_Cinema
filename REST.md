@@ -1,54 +1,119 @@
 # Progetto Sistemi Distribuiti 2022-2023 - API REST
 
-Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati in formato JSON.
+Documentation for the REST API between the Server Web and the Client Web.
+
+### GET 
 
 ## `/movies`
 
-Ogni risorsa ha la sua sezione. Per ogni risorsa vengono descritti i metodi disponibili, i parametri, il body della richiesta, la risposta e i codici di stato restituiti.
+**Description**: Get the list of all movies.
 
-### GET
+**Parameters**: no parameters are required.
 
-**Descrizione**: una breve descrizione di cosa fa il metodo applicato alla risorsa. In questo caso restituisce l'elenco dei contatti salvati.
+**Requested Body**: no body is required.
 
-**Parametri**: un elenco dei parametri se previsti, sia nel percorso (esempio `/contacts/{id}`) che nella richiesta (esempio `/contacts?id={id}`) o anche negli header. In questo caso non sono previsti.
+**Response**:  in case of success the JSON representation of the list of movies is returned.
 
-**Body richiesta**: cosa ci deve essere nel body della richiesta. In questo caso nulla perché è una GET.
+**Returned Status Codes**:
 
-**Risposta**: cosa viene restituito in caso di successo. In questo caso viene restituito la rappresentazione in JSON del contatto, un oggetto JSON con i campi `id` (un intero), `name` e `number` (due stringhe).
+* 200 OK: The request has been successfully processed and the list of movies is returned.
 
-**Codici di stato restituiti**: elenco dei codici di stato, se necessario dettagliare e non elencare quelli già previsti da Jackarta in automatico. In questo caso c'è solo lo stato `200 OK` da segnalare:
+## `/movies/{id}`
 
-* 200 OK
+**Description**: Get the movie with the given id.
+
+**Parameters**: a parameter in the path `id` that represents the id of the movie to be returned.
+
+**Requested Body**: no body is required.
+
+**Response**: in case of success the JSON representation of the movie is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the movie is returned.
+* 404 Not Found: No movie with the given id has been found.
+
+## `/movies/{id}/dates`
+
+**Description**: Get the list of dates in which the movie with the given id is available.
+
+**Parameters**: a parameter in the path `id` that represents the id of the movie of which the dates are to be returned.
+
+**Requested Body**: no body is required.
+
+**Response**: in case of success the JSON representation of the list of dates is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the list of dates is returned.
+* 404 Not Found: No movie with the given id has been found or no date has been found.
+
+## `/movies/{id}/dates/{date}/times`
+
+**Description**: Get the list of times in which the movie with the given id is available on the given date.
+
+**Parameters**: two parameters in the path 
+* `id` that represents the id of the movie of which the times are to be returned
+* `date` that represents the date of which the times are to be returned.
+
+**Requested Body**: no body is required.
+
+**Response**: in case of success the JSON representation of the list of times is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the list of times is returned.
+* 404 Not Found: No movie with the given id has been found or no date has been found or no time has been found.
+
+## `/movies/{id}/dates/{date}/times/{time}/seats`
+
+**Description**: Get the list of available seats for the movie with the given id on the given date at the given time.
+
+**Parameters**: three parameters in the path 
+* `id` that represents the id of the movie of which the seats are to be returned
+* `date` that represents the date of which the seats are to be returned 
+* `time` that represents the time of which the seats are to be returned.
+
+**Requested Body**: no body is required. 
+
+**Response**: in case of success the JSON representation of the list of seats is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the list of seats is returned.
+* 404 Not Found: No movie with the given id has been found or no date has been found or no time has been found or no seat has been found.
 
 ### POST
 
-**Descrizione**: aggiunge un contatto alla rubrica telefonica.
+## `/movies/{id}/dates/{date}/times/{time}/seats/{seats}`
 
-**Parametri**: ci deve essere l'header `Content-Type: application/json`.
+**Description**: Book the seat with the given Booking id for the selected movie, date, time and seats.
 
-**Body richiesta**: rappresentazione in formato JSON del contatto con i campi `name` e `number` che sono due stringhe.
+**Parameters**: four parameters in the path 
+* `id` that represents the id of the movie of which the seat is to be booked
+* `date` that represents the date of which the seat is to be booked 
+* `time` that represents the time of which the seat is to be booked 
+* `seat` that represents the seats to be booked.
 
-**Risposta**: in caso di successo il body è vuoto e la risorsa creata è indicata nell'header `Location`.
+**Requested Body**: no body is required.
 
-**Codici di stato restituiti**:
+**Response**: in case of success the JSON representation of the booking is returned.
 
-* 201 Created
-* 400 Bad Request: c'è un errore del client (JSON, campo mancante o altro).
+**Example response body** :
+{
+  "Id": "booking_id"
+}
 
-## `/contacts/{id}`
+**Returned Status Codes**:
 
-### GET
+* 200 OK: The request has been successfully processed and the booking is returned.
 
-**Descrizione**: restituisce il contatto con l'id fornito.
 
-**Parametri**: un parametro nel percorso `id` che rappresenta l'identificativo del contatto da restituire.
 
-**Body richiesta**: vuoto.
 
-**Risposta**: In caso di successo la rappresentazione in JSON del contatto, un oggetto JSON con i campi `id` (un intero), `name` e `number` (due stringhe).
 
-**Codici di stato restituiti**:
 
-* 200 OK
-* 400 Bad Request: c'è un errore del client (ID non valido).
-* 404 Not Found: contatto non trovato.
+
+
+
+
