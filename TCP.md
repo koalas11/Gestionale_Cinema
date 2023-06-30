@@ -1,18 +1,26 @@
 # Progetto Sistemi Distribuiti 2022-2023 - TCP
 
-This is the documentation related to the TCP Protocol between the Database and the Server Web.
+Documentation for the TCP Protocol between the Database and the Server Web.
 
-All commands are not case sensitive (but the keys and values are) and the result of each command will be a string that can be parsed into a JSON.
+To connect to the database open a socket at the database address and port 3030.
+
+All commands are not case sensitive (but the keys and values are) and the result of each command will be a string that can be parsed into a JSON "[true/false, json]".
 
 All commands need to be passed as a String.
 
+__There two types of databases with different commands:__
+1: (key -> value) database (key and value are String)
+2: (key -> list of values) database (key and value are String)
+
+These databases are different that means that the same key in the first one is different in the second one.
+
 There are two catergories of commands:
 
-[Commands for the key - String database](#commands-for-the-key---string-database)
+[Commands for the (key -> value) database](#commands-for-the-key---value-database)
 
-[Commands for the key - list of String database](#commands-for-the-key---list-of-string-database)
+[Commands for the (key -> list of value) database](#commands-for-the-key---list-of-value-database)
 
-## **Commands for the key - String database**
+## **Commands for the (key -> value) database**
 
 __SET - Command to set (or replace) a value associated with key.__
 ```
@@ -25,7 +33,7 @@ Example:
 - SeT "Best Team" "The Synchronauts"
 
 Returns:
-- [true]
+- [true] if it was successful
 - [false, error message] if there was an error
 ```
 
@@ -39,7 +47,7 @@ mSet myBeatifulNumber 42 "My Beatiful Number" 42 mykey "no u :D"
 MSET bug "An insect that lives in the dark"
 
 Returns:
-- [true]
+- [true] if it was successful
 - [false, error message] if there was an error
 ```
 
@@ -53,7 +61,7 @@ SETIF myBeatifulNumber 42 41
 SeTiF "My Beatiful Number" 42 41
 
 Returns:
-- [true] if it was successfull
+- [true] if it was successful
 - [false, error message] if there was an error
 ```
 
@@ -114,7 +122,7 @@ Returns:
 - [false, error message] if there was an error
 ```
 
-## **Commands for the key - List of String database**
+## **Commands for the (key -> list of value) database**
 
 __ADD - Command to add into the list associated with key, a value as the last element.__
 ```
