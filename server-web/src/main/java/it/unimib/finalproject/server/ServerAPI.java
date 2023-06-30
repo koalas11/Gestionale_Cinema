@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.io.*;
 import java.net.*;
 
@@ -17,7 +18,7 @@ import java.net.*;
  */
 @Path("movies")
 public class ServerAPI {
-
+    private static AtomicLong idCounter = new AtomicLong();
     /**
      * Implementazione TEST di GET "/movies".
      */
@@ -56,21 +57,19 @@ public class ServerAPI {
         JsonNode json = null;
         id = "m" + id;
         try {
-            // Connect to the server
             Socket socket = new Socket("localhost", 3030);
 
-            // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            // send command to the database and read responses
-            json = sendRequest("get " + id, in, out);
+            json = sendRequest("mget" + " Desc" + id + " Reg" + id, in, out);
             response = json.get(1);
 
-            if (response == null || !response.hasNonNull(id)) {// Movie not found.
+            if (response == null || !response.hasNonNull(id)) {
                 closeConnection(in, out, socket);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
+
             closeConnection(in, out, socket);
         } catch (IOException e) {
             e.printStackTrace();
@@ -231,10 +230,8 @@ public class ServerAPI {
         hallID = "h" + hallID;
 
         try {
-            // Connect to the server
             Socket socket = new Socket("localhost", 3030);
 
-            // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -303,6 +300,68 @@ public class ServerAPI {
         return Response.ok(response).build();
     }
 
+    /* 
+     * Implementazione di POST "/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seats}".
+    */
+    @Path("/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seats}")
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response setBooking(@PathParam("id") String id, @PathParam("date") String dateID,
+            @PathParam("time") String timeID, @PathParam("hall") String hallID, @PathParam("seats") String seatID)   {
+        JsonNode response = null;
+        JsonNode json = null;
+        id = "m" + id;
+        dateID = "d" + dateID;
+        timeID = "t" + timeID;
+        hallID = "h" + hallID;
+        
+        // create a String array splitting seatID with commas as delimiters ex "1,2,3" -> ["1", "2", "3"]
+        String[] seats = seatID.split(",");
+
+        for (String seat : seats) {
+            System.out.println("TEST SEATS -> " + seat);
+        }
+        
+        try {
+            // Connect to the server
+            Socket socket = new Socket("localhost", 3030);
+
+            // Create input and output streams for communication
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            String totalId = id + dateID + timeID + hallID;
+            String idBooking = createID();
+            String command = "msetifl";
+
+            for (String s : seats) {
+                command += " " + totalId + " " + s + " " + idBooking + " 0";
+            }
+            
+            json = sendRequest(command, in, out);
+            if (json == null) {
+                closeConnection(in, out, socket);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            response = objectMapper.readTree("{\"Id\" : \""+ idBooking + "\"}");
+
+            closeConnection(in, out, socket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.ok(response).build();
+        
+
+
+    
+    }
+
+
+
+
     /*
      * close the connection with database and closes the socket
      */
@@ -353,10 +412,16 @@ public class ServerAPI {
         return false;
     }
 
+    private static String createID()
+    {
+        return "B" + String.valueOf(idCounter.getAndIncrement());
+    }
+
     // send command to the database and read responses
     private JsonNode sendRequest(String input, BufferedReader in, PrintWriter out) throws IOException {
 
         // send command to the database and read responses
+        System.out.println(input);
         out.println(input);
         String response = in.readLine();
 
@@ -369,15 +434,18 @@ public class ServerAPI {
         // get(0) returns true if the request was successful or false otherwise
         // get(1) returns the actual data
         boolean check = jsonNode.get(0).asBoolean();
-        if (!check)
+        if (!check) {
+            System.out.println("Error: " + jsonNode.get(1));
             return null;
+        }
         // Error :C
 
         System.out.println(jsonNode);
         return jsonNode;
     }
-    // TODO take "m,d,t,h,s", for each letter in current path, check if association
 
+
+     
     
     /*
      * Implementazione di GET

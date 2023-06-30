@@ -187,7 +187,7 @@ Returns:
 
 __SETIFL - Command to set into the list associated with key, a value in the position index only if at that position there was the value oldValue.__
 ```
-SETIFL key index value
+SETIFL key index newValue oldValue
 ```
 ```
 Example:
@@ -200,7 +200,7 @@ Returns:
 
 __MSETIFL - Command to set into the list associated with key, a value in the position index only if at that position there was the value oldValue for multiple keys.__
 ```
-MSETIFL [key index value]+
+MSETIFL [key index newValue oldValue]+
 ```
 ```
 Example:

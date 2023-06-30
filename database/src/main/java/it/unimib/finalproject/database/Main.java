@@ -194,7 +194,7 @@ public class Main {
         			String key = parse(args, 1)[0];
         			
         			if (!database.remove(key))
-        				message = "[false, \"Key not Found\"";
+        				message = "[false, \"Key not Found\"]";
         			break;
         		}
         		
@@ -207,9 +207,9 @@ public class Main {
 	        			
 	        			database.setL(key, index, value);
         			} catch (IndexOutOfBoundsException e) {
-        				message = "[false, \"Index Out of Bounds\"";
+        				message = "[false, \"Index Out of Bounds\"]";
         			} catch (NumberFormatException e) {
-        				message = "[false, \"Wrong Input Index\"";
+        				message = "[false, \"Wrong Input Index\"]";
         			}
         			break;
         		}
@@ -223,9 +223,9 @@ public class Main {
             			else
             				message = "[false, \"Wrong Number of Input\"]";
         			} catch (IndexOutOfBoundsException e) {
-        				message = "[false, \"Index Out of Bounds\"";
+        				message = "[false, \"Index Out of Bounds\"]";
         			} catch (NumberFormatException e) {
-        				message = "[false, \"Wrong Input Index\"";
+        				message = "[false, \"Wrong Input Index\"]";
         			}
         			break;
         		}
@@ -239,11 +239,11 @@ public class Main {
 	        			String Oldvalue = result[3];
 	        			
             			if(!database.setIfL(key, index, value, Oldvalue))
-            				message = "[false, \"Different Value\"";
+            				message = "[false, \"Different Value\"]";
         			} catch (IndexOutOfBoundsException e) {
         				message = "[false, \"Index Out Of Bounds\"]";
         			} catch (NumberFormatException e) {
-        				message = "[false, \"Wrong Input Index\"";
+        				message = "[false, \"Wrong Input Index\"]";
         			}
         			break;
         		}
@@ -251,16 +251,17 @@ public class Main {
         		case "msetifl": {
         			try {
             			var list = parseMultiple(args);
+						System.out.println(list.size() % 4 == 0);
             			
-            			if (list.size() % 4 == 0)
+            			if (list.size() % 4 == 0) {
                 			if(!database.mSetIfL(list))
-                				message = "[false, \"Different Value\"";
-            			else
+                				message = "[false, \"Different Value\"]";
+						} else
             				message = "[false, \"Wrong Number of Input\"]";
         			} catch (IndexOutOfBoundsException e) {
-        				message = "[false, \"Index Out of Bounds\"";
+        				message = "[false, \"Index Out of Bounds\"]";
         			} catch (NumberFormatException e) {
-        				message = "[false, \"Wrong Input Index\"";
+        				message = "[false, \"Wrong Input Index\"]";
         			}
         			break;
         		}
@@ -276,7 +277,7 @@ public class Main {
         			} catch (IndexOutOfBoundsException e) {
         				message = "[false, \"Index Out Of Bounds\"]";
         			} catch (NumberFormatException e) {
-        				message = "[false, \"Wrong Input Index\"";
+        				message = "[false, \"Wrong Input Index\"]";
         			}
         			
         			break;
@@ -300,7 +301,7 @@ public class Main {
         			var key = parse(args, 1)[0];
 
         			if (!database.deleteL(key))
-        				message = "[false, \"Key Not Found\"";
+        				message = "[false, \"Key Not Found\"]";
         			break;
         		}
         		

@@ -6,8 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.Iterator;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class SampleClient {
@@ -23,58 +26,67 @@ public class SampleClient {
             // Create mapper for JSON serialization/deserialization
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode preloadedJson = null;
+
             // Wait for the connection to be established
             while(!socket.isConnected());
 
-            
             // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            try {
-                // convert a JSON string to an ObjectNode
-                preloadedJson = mapper.readValue(Paths.get(System.getProperty("user.dir") + PATH).toFile(), ObjectNode.class);
-
-                // print book
-                // System.out.println(preloadedJson.toPrettyString());
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-
             
+            Iterator<JsonNode> it = null;
+            // convert a JSON string to an ObjectNode
+            preloadedJson = mapper.readValue(Paths.get(System.getProperty("user.dir") + PATH).toFile(), ObjectNode.class);
+
+            // get data from the JSON file
+            ArrayNode movies = (ArrayNode) preloadedJson.get("movies");
+            it = movies.elements();
+
+            int index = 0;
+            String temp = null;
+            String command = "madd movies";
+            while (it.hasNext()) {
+                temp = it.next().asText();
+                command += " " + temp;
+                out.println("set m" + index + " " + temp);
+                in.readLine();
+            }
+            System.out.println(command);
+            out.println(command);
+            in.readLine();
+
             // Send commands to the server and read responses
 
-            String films = "Spiderman,Osu,Rem";
-            for (String film : films.split(",")) {
-                out.println("add movies " + film);
-                in.readLine();
-            }
+            //String movies = "Spiderman,Osu,Rem";
+            // for (String movie : movies.split(",")) {
+            //     System.out.println(movie);
+            //     out.println("add movies " + movie);
+            //     in.readLine();
+            // }
 
-            String dates = "2021-01-01,2021-01-02,2021-01-03";
-            for (String date : dates.split(",")) {
-                out.println("add dates " + date);
-                in.readLine();
-            }
+            // //String dates = "2021-01-01,2021-01-02,2021-01-03";
+            // for (String date : dates.split(",")) {
+            //     out.println("add dates " + date);
+            //     in.readLine();
+            // }
 
-            String times = "10:00,12:00,14:00,16:00,18:00,20:00,22:00";
-            for (String time : times.split(",")) {
-                out.println("add times " + time);
-                in.readLine();
-            }
+            // //String times = "10:00,12:00,14:00,16:00,18:00,20:00,22:00";
+            // for (String time : times.split(",")) {
+            //     out.println("add times " + time);
+            //     in.readLine();
+            // }
 
-            String halls = "h1,h2,h3";
-            for (String hall : halls.split(",")) {
-                out.println("add halls " + hall);
-                in.readLine();
-            }
+            // //String halls = "h1,h2,h3";
+            // for (String hall : halls.split(",")) {
+            //     out.println("add halls " + hall);
+            //     in.readLine();
+            // }
 
-            String seats = "s1,s2,s3,s4,s5,s6,s7,s8,s9,s10";
-            for (String seat : seats.split(",")) {
-                out.println("add seats " + seat);
-                in.readLine();
-            }
+            // //String seats = "s1,s2,s3,s4,s5,s6,s7,s8,s9,s10";
+            // for (String seat : seats.split(",")) {
+            //     out.println("add seats " + seat);
+            //     in.readLine();
+            // }
 
  
             // TODO aggiungi nel for (dinamico)
@@ -203,19 +215,19 @@ public class SampleClient {
 
             // adding seats to the halls (10 seats for each hall)
 
-            for (int i = 1; i <= 10; i++) {
-                out.println("add h1 s" + i);
-                in.readLine();
-                out.println("add h2 s" + i);
-                in.readLine();
-                out.println("add h3 s" + i);
-                in.readLine();
-            }
+            // for (int i = 1; i <= 10; i++) {
+            //     out.println("add h1 s" + i);
+            //     in.readLine();
+            //     out.println("add h2 s" + i);
+            //     in.readLine();
+            //     out.println("add h3 s" + i);
+            //     in.readLine();
+            // }
 
-            for (int i = 1; i <= 10; i++) {
-                out.println("set s" + i + " seat" + i);
-                in.readLine();
-            }
+            // for (int i = 1; i <= 10; i++) {
+            //     out.println("set s" + i + " seat" + i);
+            //     in.readLine();
+            // }
 
             // Close the connection
             socket.close();

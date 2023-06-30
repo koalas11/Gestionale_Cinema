@@ -124,6 +124,7 @@
 
         //getMoviesDay dato un film, restituisce il giorno.
         async function getMoviesDates() {
+            document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('date'));
             clearSelect(document.getElementById('time'));
@@ -159,6 +160,7 @@
 
         // getMoviesDayTime dato un film e un giorno, restituisce l'orario.
         async function getMoviesDatesTimes() {
+            document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('time'));
             clearSelect(document.getElementById('hall'));
@@ -198,6 +200,7 @@
 
         // getMoviesDayTimeHall dato un film, giorno e orario, restituisce una sala.
         async function getMoviesDatesTimesHalls() {
+            document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('hall'));
             const movieId = document.getElementById("film").selectedIndex;
@@ -265,8 +268,9 @@
 
             json = await response.json();
             console.log(json);
-
+            
             var hall = document.getElementById('seats');
+            hall.innerHTML = "";
             var TemplateHall = document.getElementById(json["h"+hallId]);
             hall.innerHTML = TemplateHall.innerHTML;
             //funzione per visualizzare solo una table
@@ -279,37 +283,75 @@
             // Gestione della selezione dei posti
             var seats = document.getElementsByClassName("seat");
             var list = json["m"+movieId+"d"+dateId+"t"+timeId+"h"+hallId];
+            var prenotation = [];
 
             for (var i = 0; i < seats.length; i++) {
-                if (list[i] == "0")
+                seats[i].setAttribute("Number", i);
+                if (list[i] == "0") {
                     seats[i].addEventListener("click", function () {
-                        this.classList.toggle("selected");
-                        //index in un array per POST prenotazione :C
+                        if (this.getAttribute("class") == "seat") {
+                            this.setAttribute("class", "seat selected");
+                            prenotation.push(this.getAttribute("Number"));
+                        } else {
+                            const index = prenotation.indexOf(this.getAttribute("Number"));
+                            prenotation.splice(index, 1);
+                            this.setAttribute("class", "seat");
+                        }
                     });
-                else
-                    seats[i].classList.toggle('selected');
+                    seats[i].setAttribute("class", "seat");
+                } else
+                    seats[i].setAttribute("class", "seat selected");
             }
+            button = document.getElementById("ReserveButton1");
+            button.addEventListener("click", newReservation);
+            button.myParam = prenotation;
+            button.disabled = false;
             hall.style.display = "block";
         }
 
         //metodo POST da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
 
         // newMovie aggiunge una prenotazione al server, restituisce il nuovo ID.
-        async function newReservation(movieID) {
-            const endpoint = `${API_URI}/movies`; //--> da cambiare probabilmente
+        async function newReservation(args) {
+            list = args.target.myParam;
+            console.log(list);
+            if (list.length < 1)
+                return;
+            
+            const movieId = document.getElementById("film").selectedIndex;
+            console.log(movieId);
+            if (movieId < 1)
+                return;
+
+            const dateId = document.getElementById("date").selectedIndex;
+            console.log(dateId);
+            if (dateId < 1)
+                return;
+
+            const timeId = document.getElementById("time").selectedIndex;
+            console.log(timeId);
+            if (timeId < 1)
+                return;
+
+            const hallId = document.getElementById("hall").selectedIndex;
+            console.log(hallId);
+            if (hallId < 1)
+                return;
+
+            const endpoint = `${API_URI}/movies/${movieId}/dates/${dateId}/times/${timeId}/halls/${hallId}/seats/${list}`;
             const response = await fetch(endpoint, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(movieID)
+                body: JSON.stringify(list)
             });
 
             if (!response.ok)
                 throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
 
-            const location = response.headers.get("Location");
-            return location.split("/").pop();
+            json = await response.json();
+            console.log(json);
         }
 
         // Funzione di utilità che mostra l'errore nella console e in un alert del browser.
@@ -324,64 +366,6 @@
             while (select.options.length > 0) {
                 select.remove(0);
             }
-        }
-
-        // newContactDOM viene eseguita all'invio del from. Aggiunge un nuovo
-        // contatto, prima inviandolo al server e poi mettendolo nella tabella.
-        async function newContactDOM(event) {
-            // Evito che il form venga davvero inviato.
-            event.preventDefault();
-
-            // Recuperi i dati da inviare dal form.
-            const name = document.getElementById("input-name");
-            const number = document.getElementById("input-number");
-            let contact = {
-                "name": name.value,
-                "number": number.value
-            };
-
-            // Pulisco i campi del form, ormai non servono più.
-            name.value = "";
-            number.value = "";
-
-            try {
-                // Creo il nuovo oggetto e lo invio al server, restituisce il
-                // nuovo ID.
-                contact["id"] = await newContact(contact)
-
-                // Ottengo il nuovo contatto con tutte le informazioni.
-                contact = await getContact(contact["id"]);
-
-                // Infine lo aggiungo alla tabella.
-                addContactDOM(contact);
-            } catch (error) {
-                onError("Failed to add a new user", error);
-            }
-        }
-
-        // addContactDOM aggiunge il contatto fornito in una nuova riga della tabella.
-        function addContactDOM(contact) {
-            // Selezione di <tbody> e aggiunta di una nuova riga.
-            const tbody = document.getElementById("table-body");
-            const row = tbody.insertRow();
-
-            // Aggiunta dell'ID.
-            const id = row.insertCell();
-            id.setAttribute("align", "center");
-            const idText = document.createTextNode(contact["id"]);
-            id.appendChild(idText);
-
-            // Aggiunta del nome.
-            const name = row.insertCell();
-            name.setAttribute("align", "center");
-            const nameText = document.createTextNode(contact["name"]);
-            name.appendChild(nameText);
-
-            // Aggiunta del numero.
-            const number = row.insertCell();
-            number.setAttribute("align", "center");
-            const numberText = document.createTextNode(contact["number"]);
-            number.appendChild(numberText);
         }
 
         // Ho definito init come una funzione asincrona, per cui l'esecuzione è slegata
@@ -525,9 +509,7 @@
                 <td class="seat"></td>
             </tr>
         </table>
-        <form id="Reserve1" action="" method="POST">
-            <button id="ReserveButton1">Reserve</button>
-        </form>
+        <button id="ReserveButton1">Reserve</button>
     </div>
 </div>
 

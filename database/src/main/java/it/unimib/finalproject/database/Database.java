@@ -290,8 +290,15 @@ public class Database {
 		var db = getLDB(key);
 		
 		var list = db.get(key);
-		
-		return list.get(Integer.parseInt(index)).compareAndSet(oldValue, newValue);
+		int indexParsed = Integer.parseInt(index);
+
+		synchronized(this) {
+			if (oldValue.equals(list.get(indexParsed).get())) {
+				list.set(indexParsed, new AtomicReference<String>(newValue));
+				return true;
+			} else
+				return false;
+		}
 	}
 	
     /**
