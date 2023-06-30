@@ -18,21 +18,6 @@ Documentation for the REST API between the Server Web and the Client Web.
 
 * 200 OK: The request has been successfully processed and the list of movies is returned.
 
-## `/movies/{id}`
-
-**Description**: Get the movie with the given id.
-
-**Parameters**: a parameter in the path `id` that represents the id of the movie to be returned.
-
-**Requested Body**: no body is required.
-
-**Response**: in case of success the JSON representation of the movie is returned.
-
-**Returned Status Codes**:
-
-* 200 OK: The request has been successfully processed and the movie is returned.
-* 404 Not Found: No movie with the given id has been found.
-
 ## `/movies/{id}/dates`
 
 **Description**: Get the list of dates in which the movie with the given id is available.
@@ -118,9 +103,9 @@ Documentation for the REST API between the Server Web and the Client Web.
 **Response**: in case of success the JSON representation of the booking is returned.
 
 **Example response body** :
-{
-  "Id": "booking_id"
-}
+```{```
+  ```"Id": "booking_id"```
+```}```
 
 **Returned Status Codes**:
 
