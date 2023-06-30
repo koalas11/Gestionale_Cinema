@@ -85,7 +85,8 @@ Documentation for the REST API between the Server Web and the Client Web.
 **Returned Status Codes**:
 
 * 200 OK: The request has been successfully processed and the list of seats is returned.
-
+* 404 Not Found: At least one of the parameters has not been found.
+  
 **Security** : the list of seats is obfuscated from the user (so that the user cannot see which seats are already booked)
 
 ## `/movies/booking/{bookingId}/seats`
