@@ -32,13 +32,12 @@ public class SampleClient {
             // Wait for the connection to be established
             while(!socket.isConnected());
 
-            System.out.println("1");
             HashMap<String, Integer> seats = new HashMap<String, Integer>();
             seats.put("h1", 91);
-            seats.put("h2", 91);
-            seats.put("h3", 91);
-            seats.put("h4", 91);
-            seats.put("h5", 91);
+            seats.put("h2", 70);
+            seats.put("h3", 52);
+            seats.put("h4", 88);
+            seats.put("h5", 81);
 
             // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -55,7 +54,6 @@ public class SampleClient {
             Map.Entry<String,JsonNode> entry;
             JsonNode value;
             
-            System.out.println("2");
             while (itSingle.hasNext()) {
                 entry = itSingle.next();
                 key = entry.getKey();
@@ -69,7 +67,6 @@ public class SampleClient {
             Iterator<JsonNode> times;
             Iterator<JsonNode> halls;
 
-            System.out.println("3");
             while (itMovies.hasNext()) {
                 entry = itMovies.next();
                 key = entry.getKey();
@@ -88,11 +85,13 @@ public class SampleClient {
                     out.println("add " + key + " " + date);
                     in.readLine();
 
+                    times = value.get("times").elements();
                     while (times.hasNext()) {
                         time = date + times.next().asText();
                         out.println("add " + date + " " + time);
                         in.readLine();
 
+                        halls = value.get("halls").elements();
                         while (halls.hasNext()) {
                             hall = halls.next().asText();
                             hallFull = time + hall;

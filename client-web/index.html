@@ -24,7 +24,6 @@
     <div class="container">
         <h2>Search a Film</h2>
 
-        <form id="search-movies" action="/movies" method="GET">
             <label for="film">Select a movie:</label>
             <select id="film">
                 <!--
@@ -32,9 +31,7 @@
                     <option value="film1">Omar alla conquista della Grecia</option>
                     -->
             </select>
-        </form>
 
-        <form id="search-dates" action="${API_URI}/movies/${movieId}/dates" method="GET">
             <label for="date">Select a day:</label>
             <select id="date">
                 <!--
@@ -42,9 +39,7 @@
                     <option value="day1">30/06/2023</option>
                     -->
             </select>
-        </form>
 
-        <form id="search-times" action="${API_URI}/movies/${movieId}/dates/${dates}/times" method="GET">
             <label for="time">Select a time:</label>
             <select id="time">
                 <!--
@@ -52,9 +47,7 @@
                     <option value="time1">14:53</option>
                     -->
             </select>
-        </form>
 
-        <form id="search-hall" action="${API_URI}/movies/${movieId}/dates/${dates}/times/${times}/hall" method="GET">
             <label for="hall">Select a hall:</label>
             <select id="hall">
                 <!--
@@ -66,7 +59,6 @@
                     <option value="hall5">Hall 5</option>
                     -->
             </select>
-        </form>
         <button id="search">Search</button>
     </div>
 
@@ -74,7 +66,7 @@
     <div class="container2">
         <h2>Edit Reservation</h2>
         <input type="text" id="booking-code" name="booking-code" placeholder="Enter the reservation code">
-        <button id="edit">Edit Reservation</button>        
+        <button id="edit" onclick="getBookingId()">Edit Reservation</button>        
     </div>
 
     <div id="seats" class="hall-table" style="display: none;">
@@ -141,6 +133,7 @@
 
             Object.keys(json).forEach(function (date) {
                 option = document.createElement("option");
+                option.setAttribute("ID", date.slice(1));
                 option.text = json[date];
                 select.add(option);
             });
@@ -159,8 +152,9 @@
             const movieId = document.getElementById("film").selectedIndex;
             if (movieId < 1)
                 return;
-
-            const dateId = document.getElementById("date").selectedIndex;
+            
+            var dateId = document.getElementById("date");
+            dateId = dateId[dateId.selectedIndex].getAttribute("ID");
             if (dateId < 1)
                 return;
 
@@ -181,6 +175,7 @@
 
             Object.keys(json).forEach(function (time) {
                 option = document.createElement("option");
+                option.setAttribute("ID", time.slice(1));
                 option.text = json[time];
                 select.add(option);
             });
@@ -199,11 +194,13 @@
             if (movieId < 1)
                 return;
 
-            const dateId = document.getElementById("date").selectedIndex;
+            var dateId = document.getElementById("date");
+            dateId = dateId[dateId.selectedIndex].getAttribute("ID");
             if (dateId < 1)
                 return;
 
-            const timeId = document.getElementById("time").selectedIndex;
+            var timeId = document.getElementById("time");
+            timeId = timeId[timeId.selectedIndex].getAttribute("ID");
             if (timeId < 1)
                 return;
 
@@ -224,6 +221,7 @@
 
             Object.keys(json).forEach(function (hall) {
                 option = document.createElement("option");
+                option.setAttribute("ID", hall.slice(1));
                 option.text = json[hall];
                 select.add(option);
             });
@@ -236,19 +234,23 @@
 
         // getMoviesDayTimeHallSeats dato un film, giorno e orario, restituisce una sala.
         async function getMoviesDatesTimesHallsSeats() {
-            const movieId = document.getElementById("film").selectedIndex;
+            //document.getElementById('search').disabled = true;
+            var movieId = document.getElementById("film").selectedIndex;
             if (movieId < 1)
                 return;
 
-            const dateId = document.getElementById("date").selectedIndex;
+            var dateId = document.getElementById("date");
+            dateId = dateId[dateId.selectedIndex].getAttribute("ID");
             if (dateId < 1)
                 return;
 
-            const timeId = document.getElementById("time").selectedIndex;
+            var timeId = document.getElementById("time");
+            timeId = timeId[timeId.selectedIndex].getAttribute("ID");
             if (timeId < 1)
                 return;
 
-            const hallId = document.getElementById("hall").selectedIndex;
+            var hallId = document.getElementById("hall");
+            hallId = hallId[hallId.selectedIndex].getAttribute("ID");
             if (hallId < 1)
                 return;
 
@@ -292,16 +294,106 @@
                     });
                     seats[i].setAttribute("class", "seat");
                 } else
-                    seats[i].setAttribute("class", "seat selected");
+                    seats[i].setAttribute("class", "seat booked");
             }
             button = document.getElementById("ReserveButton1");
             button.addEventListener("click", newReservation);
             button.myParam = prenotation;
             button.disabled = false;
             hall.style.display = "block";
+            
+            // non funza -> document.getElementById('search').disabled = false;
         }
 
         //metodo POST da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
+
+        async function removeSeats(args) {
+            list = args.target.myParam;
+            console.log(list);
+            const bookingId = document.getElementById("booking-code").value;
+            console.log(bookingId);
+            
+
+            const endpoint = `${API_URI}/movies/booking/${bookingId}/seats/${list}`;
+            const response = await fetch(endpoint, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(list)
+            });
+            if (!response.ok) {
+                throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+            }
+
+            json = await response.json();
+            console.log(json);
+            document.getElementById("seats").innerHTML = "";
+
+        }
+
+        async function getBookingId() {
+            const bookingId = document.getElementById("booking-code").value;
+            console.log(bookingId);
+            if (bookingId == "")
+                return;
+            const endpoint = `${API_URI}/movies/booking/${bookingId}/seats`;
+            const response = await fetch(endpoint);
+            if (!response.ok) {
+                throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
+            }
+
+            json = await response.json();
+            console.log(json);
+
+            var list;
+            var hallkey;
+            Object.keys(json).forEach(function (key) {
+                hallkey = key.charAt(key.length-1);
+                list = json[key];
+            });
+
+            var hall = document.getElementById('seats');
+            hall.innerHTML = "";
+            hallkey = ["A","B","C","D","E"][hallkey - 1];
+            var TemplateHall = document.getElementById("hall" + hallkey);
+            hall.innerHTML = TemplateHall.innerHTML;
+            //funzione per visualizzare solo una table
+            var allTables = document.getElementsByClassName('hall-table');
+            for (var i = 0; i < allTables.length; i++) {
+                allTables[i].style.display = 'none';
+            }
+            hall.style.display = 'block';
+
+            // Gestione della selezione dei posti
+            var seats = document.getElementsByClassName("seat");
+            var removed = [];
+
+            for (var i = 0; i < seats.length; i++) {
+                seats[i].setAttribute("Number", i);
+                if (list[i] == bookingId) {
+                    seats[i].addEventListener("click", function () {
+                        if (this.getAttribute("class") == "seat selected") {
+                            this.setAttribute("class", "seat removing");
+                            removed.push(this.getAttribute("Number"));
+                        } else {
+                            const index = removed.indexOf(this.getAttribute("Number"));
+                            removed.splice(index, 1);
+                            this.setAttribute("class", "seat selected");
+                        }
+                    });
+                    seats[i].setAttribute("class", "seat selected");
+                } else if (list[i] == 0) {
+                    seats[i].setAttribute("class", "seat");
+                } else
+                    seats[i].setAttribute("class", "seat booked");
+            }
+            button = document.getElementById("ReserveButton1");
+            button.addEventListener("click", removeSeats);
+            button.myParam = removed;
+            button.disabled = false;
+            hall.style.display = "block";
+        }
 
         // newMovie aggiunge una prenotazione al server, restituisce il nuovo ID.
         async function newReservation(args) {
@@ -310,23 +402,22 @@
             if (list.length < 1)
                 return;
             
-            const movieId = document.getElementById("film").selectedIndex;
-            console.log(movieId);
+            var movieId = document.getElementById("film").selectedIndex;
             if (movieId < 1)
                 return;
 
-            const dateId = document.getElementById("date").selectedIndex;
-            console.log(dateId);
+            var dateId = document.getElementById("date");
+            dateId = dateId[dateId.selectedIndex].getAttribute("ID");
             if (dateId < 1)
                 return;
 
-            const timeId = document.getElementById("time").selectedIndex;
-            console.log(timeId);
+            var timeId = document.getElementById("time");
+            timeId = timeId[timeId.selectedIndex].getAttribute("ID");
             if (timeId < 1)
                 return;
 
-            const hallId = document.getElementById("hall").selectedIndex;
-            console.log(hallId);
+            var hallId = document.getElementById("hall");
+            hallId = hallId[hallId.selectedIndex].getAttribute("ID");
             if (hallId < 1)
                 return;
 
@@ -339,11 +430,18 @@
                 body: JSON.stringify(list)
             });
 
-            if (!response.ok)
+            if (!response.ok) {
+                if (response.status == 409) {
+                    alert("I posti selezionati sono già stati prenotati");
+                    getMoviesDatesTimesHallsSeats();
+                    return;
+                }
                 throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
-
+            }
             json = await response.json();
             console.log(json);
+            document.getElementById("seats").innerHTML = "";
+            alert("Prenotazione effettuata con successo. Il codice della prenotazione è: " + json["Id"]);
         }
 
         // Funzione di utilità che mostra l'errore nella console e in un alert del browser.

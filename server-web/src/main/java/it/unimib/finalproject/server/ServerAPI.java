@@ -20,7 +20,7 @@ import java.net.*;
 public class ServerAPI {
     private static AtomicLong idCounter = new AtomicLong();
     /**
-     * Implementazione TEST di GET "/movies".
+     * Implementation ofST di GET "/movies".
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,7 +50,7 @@ public class ServerAPI {
     }
 
     /**
-     * Implementazione di GET "/movies/{id}".
+     * Implementation of GET "/movies/{id}".
      */
     @Path("{id}")
     @GET
@@ -81,7 +81,7 @@ public class ServerAPI {
     }
 
     /**
-     * Implementazione di GET "/movies/{id}/dates".
+     * Implementation of GET "/movies/{id}/dates".
      */
 
     @Path("/{id}/dates")
@@ -124,7 +124,7 @@ public class ServerAPI {
     }
 
     /**
-     * Implementazione di GET "/movies/{id}/dates/{date}/times".
+     * Implementation of GET "/movies/{id}/dates/{date}/times".
      */
 
     @Path("/{id}/dates/{date}/times")
@@ -171,7 +171,7 @@ public class ServerAPI {
     }
 
     /**
-     * Implementazione di GET "/movies/{id}/dates/{date}/times/{time}/halls".
+     * Implementation of GET "/movies/{id}/dates/{date}/times/{time}/halls".
      */
     @Path("/{id}/dates/{date}/times/{time}/halls")
     @GET
@@ -217,7 +217,7 @@ public class ServerAPI {
     }
 
     /**
-     * Implementazione di GET
+     * Implementation of GET
      * "/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats".
      */
     @Path("/{id}/dates/{date}/times/{time}/halls/{hall}/seats")
@@ -248,7 +248,7 @@ public class ServerAPI {
             }
 
             ObjectNode seats = (ObjectNode) json;
-            response = changeSeats(seats, fullId);
+            response = changeSeats(seats, fullId, null);
 
             json = sendRequest("get " + hallID, in, out);
             response = (ObjectNode) json.get(1);
@@ -267,28 +267,45 @@ public class ServerAPI {
         return Response.ok(response).build();
     }
 
-	/**
-     * Implementazione TEST di GET "/movies/all".
+    /**
+     * Implementation of GET "/booking/{bookingId}/seats".
      */
-    @Path("all")
+    @Path("booking/{bookingId}/seats")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAll() {
-        JsonNode response = null;
+    public Response getBookingId(@PathParam("bookingId") String bookingId) {
+        ObjectNode response = null;
         JsonNode json = null;
+
+
         try {
-            // Connect to the server
             Socket socket = new Socket("localhost", 3030);
 
-            // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            json = sendRequest("mgetall movies dates times halls seats", in, out);
-            response = json.get(1);
+            // send command to the database and read responses
+            json = sendRequest("get " + bookingId, in, out).get(1);
+
+            if (json == null || !json.hasNonNull(bookingId)) {
+                closeConnection(in, out, socket);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            String totalId = json.get(bookingId).asText();
+
+            json = sendRequest("getAll " + totalId, in, out).get(1);
+
+            if (json == null || !json.hasNonNull(totalId)) {
+                closeConnection(in, out, socket);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            ObjectNode seats = (ObjectNode) json;
+            response = changeSeats(seats, totalId, bookingId);
 
             closeConnection(in, out, socket);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -296,7 +313,7 @@ public class ServerAPI {
     }
 
     /* 
-     * Implementazione di POST "/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seats}".
+     * Implementation of POST "/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seats}".
     */
     @Path("/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seats}")
     @POST
@@ -312,10 +329,6 @@ public class ServerAPI {
         
         // create a String array splitting seatID with commas as delimiters ex "1,2,3" -> ["1", "2", "3"]
         String[] seats = seatID.split(",");
-
-        for (String seat : seats) {
-            System.out.println("TEST SEATS -> " + seat);
-        }
         
         try {
             // Connect to the server
@@ -336,6 +349,12 @@ public class ServerAPI {
             json = sendRequest(command, in, out);
             if (json == null) {
                 closeConnection(in, out, socket);
+                return Response.status(Response.Status.CONFLICT).build();
+            }
+
+            json = sendRequest("set " + idBooking +  " " + totalId, in, out);
+            if (json == null) {
+                closeConnection(in, out, socket);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
@@ -349,8 +368,79 @@ public class ServerAPI {
 
         return Response.ok(response).build();
     }
-    
 
+    /* 
+     * Implementation of PUT "/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seats}".
+    */
+    @Path("/booking/{bookingId}/seats/{seats}")
+    @PUT
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateBooking(@PathParam("bookingId") String bookingId, @PathParam("seats") String seatID)   {
+        JsonNode response = null;
+        JsonNode json = null;
+
+        
+        // create a String array splitting seatID with commas as delimiters ex "1,2,3" -> ["1", "2", "3"]
+        String[] seats = seatID.split(",");
+        
+        try {
+            // Connect to the server
+            Socket socket = new Socket("localhost", 3030);
+
+            // Create input and output streams for communication
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            json = sendRequest("get " + bookingId, in, out).get(1);
+            System.out.println("CIAO");
+            System.out.println(!json.hasNonNull(bookingId));
+            System.out.println(bookingId);
+            if (json == null || !json.hasNonNull(bookingId)) {
+                closeConnection(in, out, socket);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            System.out.println("CIAO2222");
+            String totalId = json.get(bookingId).asText();
+            String command = "msetifl";
+
+            for (String s : seats) {
+                command += " " + totalId + " " + s + " 0 " + bookingId;
+            }
+            
+            System.out.println("CIAO3333");
+            json = sendRequest(command, in, out);
+            if (json == null) {
+                closeConnection(in, out, socket);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+
+            System.out.println("CIAO444");
+            json = sendRequest("getAll " + totalId, in, out).get(1);
+            if (json == null || !json.hasNonNull(totalId)) {
+                closeConnection(in, out, socket);
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+
+            if (json.get(totalId).findValue(bookingId) != null) {
+                json = sendRequest("delete " + bookingId, in, out);
+                if (json == null) {
+                    closeConnection(in, out, socket);
+                    return Response.status(Response.Status.NOT_FOUND).build();
+                }
+            }
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            response = objectMapper.readTree("\"Success\"");
+
+            closeConnection(in, out, socket);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return Response.ok(response).build();
+    }
 
     /*
      * close the connection with database and closes the socket
@@ -362,13 +452,19 @@ public class ServerAPI {
         socket.close();
     }
 
-    private ObjectNode changeSeats(ObjectNode seats, String fullId) {
+    private ObjectNode changeSeats(ObjectNode seats, String fullId, String except) {
         ArrayNode list = (ArrayNode) seats.get(fullId);
         
-        for (int index = 0; index < list.size(); index++) {
-            if (!"0".equals(list.get(index).asText()))
-                list.set(index, "1");
-        }
+        if (except == null)
+            for (int index = 0; index < list.size(); index++) {
+                if (!"0".equals(list.get(index).asText()))
+                    list.set(index, "1");
+            }
+        else 
+            for (int index = 0; index < list.size(); index++) {
+                if (!except.equals(list.get(index).asText()))
+                    list.set(index, "1");
+            }
 
 		return seats.set(fullId, list);
 	}
@@ -384,22 +480,6 @@ public class ServerAPI {
         }
 
         return string;
-    }
-
-    private boolean keyValueExists(JsonNode json, String field) {
-        if (field == null || json == null) {
-            return false;
-        }
-
-        Iterator<JsonNode> it = json.elements();
-
-        while (it.hasNext()) {
-            if (field.equals(it.next().asText())) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private static String createID()
@@ -438,7 +518,7 @@ public class ServerAPI {
      
     
     /*
-     * Implementazione di GET
+     * Implementation of GET
      * "/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seat}".
      */
     /*@Path("/{id}/dates/{date}/times/{time}/halls/{hall}/seats/{seat}")

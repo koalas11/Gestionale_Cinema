@@ -146,6 +146,14 @@
   .seat.selected {
   background-color: blue;
   }
+
+  .seat.booked {
+  background-color: red;
+  }
+
+  .seat.removing {
+    background-color: green;
+    }
   
   .hall-table {
   display: none;

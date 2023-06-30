@@ -10,7 +10,8 @@ Lo scheletro propone degli esempi dei tre componenti da cui partire.
 
 ## Compilazione ed esecuzione
 
-Per facilitare l'esecuzione locale è presente il setupServer.bat
+Per facilitare l'esecuzione locale è presente il setupServer.bat che esegue i comandi necessari per avviare il server, il database e il file index.html. 
+E' inoltre presente un timeout tra l'avvio del server e del database per permettere al file html di avviarsi correttamente.
 
 Il server Web e il database sono dei progetti Java che utilizano Maven per gestire le dipendenze, la compilazione e l'esecuzione. È necessario eseguire in seguente i seguenti obiettivi per compilare ed eseguire: `clean`, che rimuove la cartella `target`, `compile` per compilare e `exec:java` per avviare il
 componente.
