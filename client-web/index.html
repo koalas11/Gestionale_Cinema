@@ -22,18 +22,18 @@
     </header>
 
     <div class="container">
-        <h2>Search a Film</h2>
+        <h2>Search a movie</h2>
 
-            <label for="film">Select a movie:</label>
-            <select id="film">
+            <label for="movie">Select a movie:</label>
+            <select disabled id="movie">
                 <!--
                     <option value="" selected disabled></option>
-                    <option value="film1">Omar alla conquista della Grecia</option>
+                    <option value="movie1">Omar alla conquista della Grecia</option>
                     -->
             </select>
 
             <label for="date">Select a day:</label>
-            <select id="date">
+            <select disabled id="date">
                 <!--
                     <option value="" selected disabled></option>
                     <option value="day1">30/06/2023</option>
@@ -41,7 +41,7 @@
             </select>
 
             <label for="time">Select a time:</label>
-            <select id="time">
+            <select disabled id="time">
                 <!--
                     <option value="" selected disabled></option>
                     <option value="time1">14:53</option>
@@ -49,7 +49,7 @@
             </select>
 
             <label for="hall">Select a hall:</label>
-            <select id="hall">
+            <select disabled id="hall">
                 <!--
                     <option value="" selected disabled></option>
                     <option value="hall1">Hall 1</option>
@@ -59,14 +59,14 @@
                     <option value="hall5">Hall 5</option>
                     -->
             </select>
-        <button id="search">Search</button>
+        <button disabled id="search">Search</button>
     </div>
 
 
     <div class="container2">
-        <h2>Edit Reservation</h2>
-        <input type="text" id="booking-code" name="booking-code" placeholder="Enter the reservation code">
-        <button id="edit" onclick="getBookingId()">Edit Reservation</button>        
+        <h2>Edit Booking</h2>
+        <input type="text" id="booking-code" name="booking-code" placeholder="Enter the booking code">
+        <button id="edit" onclick="getBookingId()">Edit Booking</button>        
     </div>
 
     <div id="seats" class="hall-table" style="display: none;">
@@ -79,7 +79,7 @@
         //metodi GET
         const API_URI = "http://localhost:8080";
 
-        // getMovies restituisce l'elenco dei film.
+        // getMovies restituisce l'elenco dei movie.
         async function getMovies() {
             const endpoint = `${API_URI}/movies`;
 
@@ -90,7 +90,7 @@
 
             json = await response.json();
             console.log(json);
-            const select = document.getElementById("film");
+            const select = document.getElementById("movie");
 
             var option = document.createElement("option");
             option.text = "<Select a movie>";
@@ -98,24 +98,28 @@
 
             Object.keys(json).forEach(function (movie) {
                 option = document.createElement("option");
+                option.setAttribute("ID", movie.slice(1));
                 option.text = json[movie];
                 select.add(option);
             });
 
             // Aggiungo l'handler per l'evento di invio al form.
             select.addEventListener("change", getMoviesDates);
+            document.getElementById('movie').disabled = false;
         }
 
-        //getMoviesDay dato un film, restituisce il giorno.
+        //getMoviesDay dato un movie, restituisce il giorno.
         async function getMoviesDates() {
             document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('date'));
             clearSelect(document.getElementById('time'));
             clearSelect(document.getElementById('hall'));
-            const movieId = document.getElementById("film").selectedIndex;
+            var movieId = document.getElementById("movie");
+            movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
                 return;
+
             const endpoint = `${API_URI}/movies/${movieId}/dates`;
             const response = await fetch(endpoint);
 
@@ -143,13 +147,14 @@
             document.getElementById('date').disabled = false;
         }
 
-        // getMoviesDayTime dato un film e un giorno, restituisce l'orario.
+        // getMoviesDayTime dato un movie e un giorno, restituisce l'orario.
         async function getMoviesDatesTimes() {
             document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('time'));
             clearSelect(document.getElementById('hall'));
-            const movieId = document.getElementById("film").selectedIndex;
+            var movieId = document.getElementById("movie");
+            movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
                 return;
             
@@ -185,12 +190,13 @@
             document.getElementById('time').disabled = false;
         }
 
-        // getMoviesDayTimeHall dato un film, giorno e orario, restituisce una sala.
+        // getMoviesDayTimeHall dato un movie, giorno e orario, restituisce una sala.
         async function getMoviesDatesTimesHalls() {
             document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('hall'));
-            const movieId = document.getElementById("film").selectedIndex;
+            var movieId = document.getElementById("movie");
+            movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
                 return;
 
@@ -232,10 +238,10 @@
             button.disabled = false;
         }
 
-        // getMoviesDayTimeHallSeats dato un film, giorno e orario, restituisce una sala.
+        // getMoviesDayTimeHallSeats dato un movie, giorno e orario, restituisce una sala.
         async function getMoviesDatesTimesHallsSeats() {
-            //document.getElementById('search').disabled = true;
-            var movieId = document.getElementById("film").selectedIndex;
+            var movieId = document.getElementById("movie");
+            movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
                 return;
 
@@ -253,7 +259,6 @@
             hallId = hallId[hallId.selectedIndex].getAttribute("ID");
             if (hallId < 1)
                 return;
-
             const endpoint = `${API_URI}/movies/${movieId}/dates/${dateId}/times/${timeId}/halls/${hallId}/seats`;
             const response = await fetch(endpoint);
             if (!response.ok) {
@@ -296,8 +301,8 @@
                 } else
                     seats[i].setAttribute("class", "seat booked");
             }
-            button = document.getElementById("ReserveButton1");
-            button.addEventListener("click", newReservation);
+            button = document.getElementById("BookButton");
+            button.addEventListener("click", newBook);
             button.myParam = prenotation;
             button.disabled = false;
             hall.style.display = "block";
@@ -305,14 +310,16 @@
             // non funza -> document.getElementById('search').disabled = false;
         }
 
-        //metodo POST da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
+        //metodo PUT da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
 
         async function removeSeats(args) {
             list = args.target.myParam;
             console.log(list);
+            if (list.length < 1)
+                return;
+
             const bookingId = document.getElementById("booking-code").value;
             console.log(bookingId);
-            
 
             const endpoint = `${API_URI}/movies/booking/${bookingId}/seats/${list}`;
             const response = await fetch(endpoint, {
@@ -335,11 +342,15 @@
         async function getBookingId() {
             const bookingId = document.getElementById("booking-code").value;
             console.log(bookingId);
-            if (bookingId == "")
+            const regex = /^B[0-9]+/;
+            if (!bookingId.match(regex)) {
+                alert("Booking with ID: " + bookingId + " not found.");
                 return;
+            }
             const endpoint = `${API_URI}/movies/booking/${bookingId}/seats`;
             const response = await fetch(endpoint);
             if (!response.ok) {
+                alert("Booking with ID: " + bookingId + " not found.");
                 throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
             }
 
@@ -388,21 +399,22 @@
                 } else
                     seats[i].setAttribute("class", "seat booked");
             }
-            button = document.getElementById("ReserveButton1");
+            button = document.getElementById("BookButton");
             button.addEventListener("click", removeSeats);
             button.myParam = removed;
             button.disabled = false;
             hall.style.display = "block";
         }
 
-        // newMovie aggiunge una prenotazione al server, restituisce il nuovo ID.
-        async function newReservation(args) {
+        // newBook aggiunge una prenotazione al server, restituisce il nuovo ID.
+        async function newBook(args) {
             list = args.target.myParam;
             console.log(list);
             if (list.length < 1)
                 return;
             
-            var movieId = document.getElementById("film").selectedIndex;
+            var movieId = document.getElementById("movie");
+            movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
                 return;
 
@@ -432,7 +444,7 @@
 
             if (!response.ok) {
                 if (response.status == 409) {
-                    alert("I posti selezionati sono già stati prenotati");
+                    alert("Those seats are already booked.");
                     getMoviesDatesTimesHallsSeats();
                     return;
                 }
@@ -441,7 +453,7 @@
             json = await response.json();
             console.log(json);
             document.getElementById("seats").innerHTML = "";
-            alert("Prenotazione effettuata con successo. Il codice della prenotazione è: " + json["Id"]);
+            alert("The booking was successful. Booking ID: " + json["Id"]);
         }
 
         // Funzione di utilità che mostra l'errore nella console e in un alert del browser.
@@ -599,7 +611,7 @@
                 <td class="seat"></td>
             </tr>
         </table>
-        <button id="ReserveButton1">Reserve</button>
+        <button id="BookButton">Submit</button>
     </div>
 </div>
 
@@ -704,9 +716,7 @@
                 <td class="seat"></td>
             </tr>
         </table>
-        <form id="Reserve2" action="" method="POST">
-            <button id="ReserveButton2">Reserve</button>
-        </form>
+        <button id="BookButton">Submit</button>
     </div>
 </div>
 
@@ -789,9 +799,7 @@
                 <td class="seat"></td>
             </tr>
         </table>
-        <form id="Reserve3" action="" method="POST">
-            <button id="ReserveButton3">Reserve</button>
-        </form>
+        <button id="BookButton">Submit</button>
     </div>
 </div>
 
@@ -919,9 +927,7 @@
                 <td class="seat"></td>
             </tr>
         </table>
-        <form id="Reserve4" action="" method="POST">
-            <button id="ReserveButton4">Reserve</button>
-        </form>
+        <button id="BookButton">Submit</button>
     </div>
 </div>
 
@@ -1037,9 +1043,7 @@
                 <td class="seat"></td>
             </tr>
         </table>
-        <form id="Reserve5" action="" method="POST">
-            <button id="ReserveButton5">Reserve</button>
-        </form>
+        <button id="BookButton">Submit</button>
     </div>
 </div>
 

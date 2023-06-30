@@ -46,7 +46,7 @@ Documentation for the REST API between the Server Web and the Client Web.
 **Returned Status Codes**:
 
 * 200 OK: The request has been successfully processed and the list of dates is returned.
-* 404 Not Found: No movie with the given id has been found or no date has been found.
+* 404 Not Found: At least one of the parameters has not been found.
 
 ## `/movies/{id}/dates/{date}/times`
 
@@ -63,31 +63,49 @@ Documentation for the REST API between the Server Web and the Client Web.
 **Returned Status Codes**:
 
 * 200 OK: The request has been successfully processed and the list of times is returned.
-* 404 Not Found: No movie with the given id has been found or no date has been found or no time has been found.
+* 404 Not Found: At least one of the parameters has not been found.
 
-## `/movies/{id}/dates/{date}/times/{time}/seats`
+## `/movies/{id}/dates/{date}/times/{time}/halls`
 
-**Description**: Get the list of available seats for the movie with the given id on the given date at the given time.
+**Description**: Get the list of available halls for the movie with the given id on the given date at the given time.
 
 **Parameters**: three parameters in the path 
-* `id` that represents the id of the movie of which the seats are to be returned
-* `date` that represents the date of which the seats are to be returned 
-* `time` that represents the time of which the seats are to be returned.
+* `id` that represents the id of the movie of which the halls are to be returned
+* `date` that represents the date of which the halls are to be returned 
+* `time` that represents the time of which the halls are to be returned.
 
 **Requested Body**: no body is required. 
+
+**Response**: in case of success the JSON representation of the list of halls is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the list of halls is returned.
+* 404 Not Found: At least one of the parameters has not been found.
+
+## `/movies/{id}/dates/{date}/times/{time}/halls/{hall}/seats`
+
+**Description**: Get the list of available seats for the movie with the given id on the given date at the given time in the given hall.
+
+**Parameters**: four parameters in the path
+* `id` that represents the id of the movie of which the seats are to be returned
+* `date` that represents the date of which the seats are to be returned
+* `time` that represents the time of which the seats are to be returned
+* `hall` that represents the hall of which the seats are to be returned.
+
+**Requested Body**: no body is required.
 
 **Response**: in case of success the JSON representation of the list of seats is returned.
 
 **Returned Status Codes**:
 
 * 200 OK: The request has been successfully processed and the list of seats is returned.
-* 404 Not Found: No movie with the given id has been found or no date has been found or no time has been found or no seat has been found.
 
 ### POST
 
 ## `/movies/{id}/dates/{date}/times/{time}/seats/{seats}`
 
-**Description**: Book the seat with the given Booking id for the selected movie, date, time and seats.
+**Description**: Book the seat with the given Booking id for the selected movie, date, time, hall and seats.
 
 **Parameters**: four parameters in the path 
 * `id` that represents the id of the movie of which the seat is to be booked
@@ -107,6 +125,28 @@ Documentation for the REST API between the Server Web and the Client Web.
 **Returned Status Codes**:
 
 * 200 OK: The request has been successfully processed and the booking is returned.
+* 404 Not Found: At least one of the parameters has not been found.
+* 409 Conflict: The seat is already booked.
+
+### PUT 
+
+## `/movies/booking/{bookingId}/seats/{seats}`
+
+**Description**: Update the booking with the given Booking id for the selected seats.
+
+**Parameters**: two parameters in the path
+* `bookingId` that represents the id of the booking to be updated
+* `seats` that represents the seats to be updated.
+
+**Requested Body**: no body is required.
+
+**Response**: in case of success a JSON with "Success" is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the booking is returned.
+* 404 Not Found: At least one of the parameters has not been found.
+
 
 
 

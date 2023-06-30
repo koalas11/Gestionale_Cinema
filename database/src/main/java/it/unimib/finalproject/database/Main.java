@@ -375,7 +375,7 @@ public class Main {
     		
     		if (s1 != null)
     			return s1;
-    		if (s2 != null)
+    		if (s2 != null && !s2.matches("\\A\"+$"))
     			return s2;
     		return null;
         }
