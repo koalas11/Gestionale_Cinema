@@ -44,7 +44,7 @@ public class Main {
         System.out.println(String.format("Jersey app started with endpoints available at "
                 + "%s%nHit Ctrl-C to stop it...", BASE_URI));
 
-        SampleClient.testConnect();
+        SampleClient.populateDB();
         System.out.println(String.format("Database started with endpoints available at: " + 
         //        SampleClient.getServerHost() + ": " + SampleClient.getServerPort()));
         "localhost: 3030"));

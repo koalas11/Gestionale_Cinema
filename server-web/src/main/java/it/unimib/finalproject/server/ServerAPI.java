@@ -423,8 +423,7 @@ public class ServerAPI {
     private void closeConnection(BufferedReader in, PrintWriter out, Socket socket) throws IOException {
         try {
             out.println("disconnect");
-            String goodbye = in.readLine();
-            System.out.println(goodbye);
+            in.readLine();
             socket.close();
         } catch (IOException e) {
             socket.close();
@@ -471,7 +470,6 @@ public class ServerAPI {
 
     // send command to the database and read responses
     private JsonNode sendRequest(String input, BufferedReader in, PrintWriter out) throws IOException {
-        System.out.println(input);
         out.println(input);
         String response = in.readLine();
 
@@ -482,11 +480,8 @@ public class ServerAPI {
         JsonNode jsonNode = objectMapper.readTree(response);
         boolean check = jsonNode.get(0).asBoolean();
         if (!check) {
-            System.out.println("Error: " + jsonNode.get(1));
             return null;
         }
-
-        System.out.println(jsonNode);
         return jsonNode;
     }
 }

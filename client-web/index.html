@@ -24,41 +24,17 @@
     <div class="container">
         <h2>Search a movie</h2>
 
-            <label for="movie">Select a movie:</label>
-            <select disabled id="movie">
-                <!--
-                    <option value="" selected disabled></option>
-                    <option value="movie1">Omar alla conquista della Grecia</option>
-                    -->
-            </select>
+        <label for="movie">Select a movie:</label>
+        <select disabled id="movie"></select>
 
-            <label for="date">Select a day:</label>
-            <select disabled id="date">
-                <!--
-                    <option value="" selected disabled></option>
-                    <option value="day1">30/06/2023</option>
-                    -->
-            </select>
+        <label for="date">Select a day:</label>
+        <select disabled id="date"></select>
 
-            <label for="time">Select a time:</label>
-            <select disabled id="time">
-                <!--
-                    <option value="" selected disabled></option>
-                    <option value="time1">14:53</option>
-                    -->
-            </select>
+        <label for="time">Select a time:</label>
+        <select disabled id="time"></select>
 
-            <label for="hall">Select a hall:</label>
-            <select disabled id="hall">
-                <!--
-                    <option value="" selected disabled></option>
-                    <option value="hall1">Hall 1</option>
-                    <option value="hall2">Hall 2</option>
-                    <option value="hall3">Hall 3</option>
-                    <option value="hall4">Hall 4</option>
-                    <option value="hall5">Hall 5</option>
-                    -->
-            </select>
+        <label for="hall">Select a hall:</label>
+        <select disabled id="hall"></select>
         <button disabled id="search">Search</button>
     </div>
 
@@ -66,8 +42,13 @@
     <div class="container2">
         <h2>Edit Booking</h2>
         <input type="text" id="booking-code" name="booking-code" placeholder="Enter the booking code">
-        <button id="edit" onclick="getBookingId()">Edit Booking</button>        
+        <button id="edit" onclick="getBookingId()">Edit Booking</button>
     </div>
+
+    <h2 hidden id="seats-edit">Edit Booking</h2>
+    <h2 hidden id="seats-add">Add Booking</h2>
+
+    <h2 id="seats-title" class="seats-title"></h2>
 
     <div id="seats" class="hall-table" style="display: none;">
 
@@ -89,7 +70,6 @@
                 throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
 
             json = await response.json();
-            console.log(json);
             const select = document.getElementById("movie");
 
             var option = document.createElement("option");
@@ -110,11 +90,13 @@
 
         //getMoviesDay dato un movie, restituisce il giorno.
         async function getMoviesDates() {
+            document.getElementById("seats-title").innerText = "";
             document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('date'));
             clearSelect(document.getElementById('time'));
             clearSelect(document.getElementById('hall'));
+
             var movieId = document.getElementById("movie");
             movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
@@ -128,7 +110,6 @@
             }
 
             json = await response.json();
-            console.log(json);
             const select = document.getElementById("date");
 
             var option = document.createElement("option");
@@ -149,15 +130,17 @@
 
         // getMoviesDayTime dato un movie e un giorno, restituisce l'orario.
         async function getMoviesDatesTimes() {
+            document.getElementById("seats-title").innerText = "";
             document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('time'));
             clearSelect(document.getElementById('hall'));
+
             var movieId = document.getElementById("movie");
             movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
                 return;
-            
+
             var dateId = document.getElementById("date");
             dateId = dateId[dateId.selectedIndex].getAttribute("ID");
             if (dateId < 1)
@@ -171,7 +154,6 @@
             }
 
             json = await response.json();
-            console.log(json);
             const select = document.getElementById("time");
 
             var option = document.createElement("option");
@@ -192,9 +174,12 @@
 
         // getMoviesDayTimeHall dato un movie, giorno e orario, restituisce una sala.
         async function getMoviesDatesTimesHalls() {
+            event.preventDefault();
+            document.getElementById("seats-title").innerText = "";
             document.getElementById('seats').innerHTML = "";
             document.getElementById('search').disabled = true;
             clearSelect(document.getElementById('hall'));
+
             var movieId = document.getElementById("movie");
             movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
@@ -218,7 +203,6 @@
             }
 
             json = await response.json();
-            console.log(json);
             const select = document.getElementById("hall");
 
             var option = document.createElement("option");
@@ -234,12 +218,19 @@
 
             document.getElementById('hall').disabled = false;
             button = document.getElementById('search');
+            select.addEventListener("change", function () {
+                document.getElementById("seats-title").innerText = "";
+                document.getElementById('seats').innerHTML = "";
+            });
             button.addEventListener("click", getMoviesDatesTimesHallsSeats);
             button.disabled = false;
         }
 
         // getMoviesDayTimeHallSeats dato un movie, giorno e orario, restituisce una sala.
         async function getMoviesDatesTimesHallsSeats() {
+            document.getElementById("seats-title").innerText = "";
+            document.getElementById('seats').innerHTML = "";
+
             var movieId = document.getElementById("movie");
             movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
@@ -259,6 +250,7 @@
             hallId = hallId[hallId.selectedIndex].getAttribute("ID");
             if (hallId < 1)
                 return;
+
             const endpoint = `${API_URI}/movies/${movieId}/dates/${dateId}/times/${timeId}/halls/${hallId}/seats`;
             const response = await fetch(endpoint);
             if (!response.ok) {
@@ -266,11 +258,12 @@
             }
 
             json = await response.json();
-            console.log(json);
-            
+
+            var SeatsTitle = document.getElementById("seats-title");
+            SeatsTitle.innerText = document.getElementById("seats-add").innerText;
             var hall = document.getElementById('seats');
             hall.innerHTML = "";
-            var TemplateHall = document.getElementById(json["h"+hallId]);
+            var TemplateHall = document.getElementById(json["h" + hallId]);
             hall.innerHTML = TemplateHall.innerHTML;
             //funzione per visualizzare solo una table
             var allTables = document.getElementsByClassName('hall-table');
@@ -281,7 +274,7 @@
 
             // Gestione della selezione dei posti
             var seats = document.getElementsByClassName("seat");
-            var list = json["m"+movieId+"d"+dateId+"t"+timeId+"h"+hallId];
+            var list = json["m" + movieId + "d" + dateId + "t" + timeId + "h" + hallId];
             var prenotation = [];
 
             for (var i = 0; i < seats.length; i++) {
@@ -306,20 +299,16 @@
             button.myParam = prenotation;
             button.disabled = false;
             hall.style.display = "block";
-            
-            // non funza -> document.getElementById('search').disabled = false;
         }
 
         //metodo PUT da aggiungere logica (deve vedere quali posti può prenotare, quali già prenotati ecc..)
 
         async function removeSeats(args) {
             list = args.target.myParam;
-            console.log(list);
             if (list.length < 1)
                 return;
 
             const bookingId = document.getElementById("booking-code").value;
-            console.log(bookingId);
 
             const endpoint = `${API_URI}/movies/booking/${bookingId}/seats/${list}`;
             const response = await fetch(endpoint, {
@@ -334,19 +323,21 @@
             }
 
             json = await response.json();
-            console.log(json);
             document.getElementById("seats").innerHTML = "";
-
+            document.getElementById("seats-title").innerText = "";
+            alert("The edit was a " + json);
         }
 
         async function getBookingId() {
+            document.getElementById("seats-title").innerText = "";
+            document.getElementById('seats').innerHTML = "";
             const bookingId = document.getElementById("booking-code").value;
-            console.log(bookingId);
             const regex = /^B[0-9]+/;
             if (!bookingId.match(regex)) {
                 alert("Booking with ID: " + bookingId + " not found.");
                 return;
             }
+
             const endpoint = `${API_URI}/movies/booking/${bookingId}/seats`;
             const response = await fetch(endpoint);
             if (!response.ok) {
@@ -355,18 +346,19 @@
             }
 
             json = await response.json();
-            console.log(json);
 
             var list;
             var hallkey;
             Object.keys(json).forEach(function (key) {
-                hallkey = key.charAt(key.length-1);
+                hallkey = key.charAt(key.length - 1);
                 list = json[key];
             });
 
+            var SeatsTitle = document.getElementById("seats-title");
+            SeatsTitle.innerText = document.getElementById("seats-edit").innerText;
             var hall = document.getElementById('seats');
             hall.innerHTML = "";
-            hallkey = ["A","B","C","D","E"][hallkey - 1];
+            hallkey = ["A", "B", "C", "D", "E"][hallkey - 1];
             var TemplateHall = document.getElementById("hall" + hallkey);
             hall.innerHTML = TemplateHall.innerHTML;
             //funzione per visualizzare solo una table
@@ -409,10 +401,9 @@
         // newBook aggiunge una prenotazione al server, restituisce il nuovo ID.
         async function newBook(args) {
             list = args.target.myParam;
-            console.log(list);
             if (list.length < 1)
                 return;
-            
+
             var movieId = document.getElementById("movie");
             movieId = movieId[movieId.selectedIndex].getAttribute("ID");
             if (movieId < 1)
@@ -451,9 +442,9 @@
                 throw new Error(`Response from "${endpoint}" was not successful: ${response.status} ${response.statusText}`);
             }
             json = await response.json();
-            console.log(json);
             document.getElementById("seats").innerHTML = "";
             alert("The booking was successful. Booking ID: " + json["Id"]);
+            document.getElementById("seats-title").innerText = "";
         }
 
         // Funzione di utilità che mostra l'errore nella console e in un alert del browser.
@@ -611,6 +602,21 @@
                 <td class="seat"></td>
             </tr>
         </table>
+        <div class="legend">
+            <h2>Legend</h2>
+            <div class="legend-item">
+                <span class="legend-dot available"></span> Available
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot selected"></span> Selected
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot booked"></span> Booked
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot removed"></span> Removed
+            </div>
+        </div>
         <button id="BookButton">Submit</button>
     </div>
 </div>
@@ -716,6 +722,21 @@
                 <td class="seat"></td>
             </tr>
         </table>
+        <div class="legend">
+            <h2>Legend</h2>
+            <div class="legend-item">
+                <span class="legend-dot available"></span> Available
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot selected"></span> Selected
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot booked"></span> Booked
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot removed"></span> Removed
+            </div>
+        </div>
         <button id="BookButton">Submit</button>
     </div>
 </div>
@@ -799,6 +820,21 @@
                 <td class="seat"></td>
             </tr>
         </table>
+        <div class="legend">
+            <h2>Legend</h2>
+            <div class="legend-item">
+                <span class="legend-dot available"></span> Available
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot selected"></span> Selected
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot booked"></span> Booked
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot removed"></span> Removed
+            </div>
+        </div>
         <button id="BookButton">Submit</button>
     </div>
 </div>
@@ -927,6 +963,21 @@
                 <td class="seat"></td>
             </tr>
         </table>
+        <div class="legend">
+            <h2>Legend</h2>
+            <div class="legend-item">
+                <span class="legend-dot available"></span> Available
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot selected"></span> Selected
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot booked"></span> Booked
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot removed"></span> Removed
+            </div>
+        </div>
         <button id="BookButton">Submit</button>
     </div>
 </div>
@@ -1043,6 +1094,21 @@
                 <td class="seat"></td>
             </tr>
         </table>
+        <div class="legend">
+            <h2>Legend</h2>
+            <div class="legend-item">
+                <span class="legend-dot available"></span> Available
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot selected"></span> Selected
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot booked"></span> Booked
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot removed"></span> Removed
+            </div>
+        </div>
         <button id="BookButton">Submit</button>
     </div>
 </div>

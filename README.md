@@ -38,7 +38,6 @@ Il server Web si pone in ascolto all'indirizzo `localhost` alla porta `8080`. Il
     * `WrongInputException.java`: classe che implementa un'eccezione personalizzata per la gestione degli errori.
 
 * `client-web`:
-    * `index.html`: file HTML base
-    * `table.html`: file HTML che contiene tabelle
+    * `index.html`: file HTML base per la pagina web.
     * `style.css`: file CSS per la formattazione della pagina
 

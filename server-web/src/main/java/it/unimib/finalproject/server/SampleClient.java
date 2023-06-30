@@ -18,7 +18,7 @@ public class SampleClient {
     private static final String SERVER_HOST = "localhost";
     private static final int SERVER_PORT = 3030;
     private static final String PATH = "\\src\\main\\java\\it\\unimib\\finalproject\\server\\preloadedData.json";
-    public static void testConnect() {
+    public static void populateDB() {
         
         try {
             // Connect to the server

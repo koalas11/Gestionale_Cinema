@@ -86,6 +86,26 @@ Documentation for the REST API between the Server Web and the Client Web.
 
 * 200 OK: The request has been successfully processed and the list of seats is returned.
 
+**Security** : the list of seats is obfuscated from the user (so that the user cannot see which seats are already booked)
+
+## `/movies/booking/{bookingId}/seats`
+
+**Description**: Get the list of seats for the booking with the given id.
+
+**Parameters**: a parameter in the path `bookingId` that represents the id of the booking of which the seats are to be returned.
+
+**Requested Body**: no body is required.
+
+**Response**: in case of success the JSON representation of the list of seats is returned.
+
+**Returned Status Codes**:
+
+* 200 OK: The request has been successfully processed and the list of seats is returned.
+
+* 404 Not Found: At least one of the parameters has not been found.
+
+**Security** : the list of seats is obfuscated from the user (so that the user cannot see which seats are already booked)
+
 ### POST
 
 ## `/movies/{id}/dates/{date}/times/{time}/seats/{seats}`
@@ -131,14 +151,6 @@ Documentation for the REST API between the Server Web and the Client Web.
 
 * 200 OK: The request has been successfully processed and the booking is returned.
 * 404 Not Found: At least one of the parameters has not been found.
-
-
-
-
-
-
-
-
 
 
 
