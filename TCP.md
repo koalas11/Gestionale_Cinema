@@ -8,6 +8,8 @@ All commands are not case sensitive (but the keys and values are) and the result
 
 All commands need to be passed as a String.
 
+__Important:__ ```[key]+``` means that there can be more than 1 key
+
 __There two types of databases with different commands:__
 1: (key -> value) database (key and value are String)
 2: (key -> list of values) database (key and value are String)
