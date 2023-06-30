@@ -60,9 +60,7 @@ public class Main {
                     }
                     
                     try {
-						System.out.println(inputLine);
                     	result = executeCommand(inputLine);
-						System.out.println(result);
                     } catch (WrongInputException e) {
                     	out.println("[false, \"" + e.getMessage() + "\"]");
                     	break;
@@ -253,7 +251,6 @@ public class Main {
         		case "msetifl": {
         			try {
             			var list = parseMultiple(args);
-						System.out.println(list.size() % 4 == 0);
             			
             			if (list.size() % 4 == 0) {
                 			if(!database.mSetIfL(list))

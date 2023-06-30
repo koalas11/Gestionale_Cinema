@@ -222,9 +222,9 @@
             option.text = "<Select a hall>";
             select.add(option);
 
-            json["m" + movieId + "d" + dateId + "t" + timeId].forEach(function (hall) {
+            Object.keys(json).forEach(function (hall) {
                 option = document.createElement("option");
-                option.text = hall;
+                option.text = json[hall];
                 select.add(option);
             });
 

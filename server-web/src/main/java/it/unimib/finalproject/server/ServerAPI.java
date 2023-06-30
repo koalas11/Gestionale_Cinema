@@ -190,21 +190,20 @@ public class ServerAPI {
             // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            System.out.println("ok");
-            // send command to the database and read responses
-            json = sendRequest("mgetall " + id + " " + dateID + " " + timeID, in, out);
+            String totalID = id + dateID + timeID;
+            json = sendRequest("getall " + totalID, in, out);
             response = json.get(1);
 
-            if (response == null || !(keyValueExists(response.get(id), dateID) && keyValueExists(response.get(dateID), timeID))) {
+            if (response == null || !response.hasNonNull(totalID)) {
                 closeConnection(in, out, socket);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            json = sendRequest("mgetall " + id + dateID + timeID, in, out);
-            response = json.get(1);
+            String request = makeCommand("mget", response.get(totalID)).replace(totalID, "");
 
-            if (response == null || !response.hasNonNull(id + dateID + timeID)) {
+            response = sendRequest(request, in, out);
+
+            if (response == null) {
                 closeConnection(in, out, socket);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -214,7 +213,7 @@ public class ServerAPI {
             e.printStackTrace();
         }
 
-        return Response.ok(response).build();
+        return Response.ok(response.get(1)).build();
     }
 
     /**
@@ -238,14 +237,6 @@ public class ServerAPI {
 
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            json = sendRequest("mgetall " + id + " " + dateID + " " + timeID + " " + hallID, in, out).get(1);
-
-            if (!(keyValueExists(json.get(id), dateID) && keyValueExists(json.get(dateID), timeID)
-                    && keyValueExists(json.get(timeID), hallID))) {
-                closeConnection(in, out, socket);
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
 
             // send command to the database and read responses
             String fullId = id + dateID + timeID + hallID;
