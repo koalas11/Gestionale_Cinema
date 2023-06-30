@@ -99,15 +99,14 @@
             json = await response.json();
             console.log(json);
             const select = document.getElementById("film");
-            movies = json["movies"];
 
             var option = document.createElement("option");
             option.text = "<Select a movie>";
             select.add(option);
 
-            movies.forEach(function (movie) {
+            Object.keys(json).forEach(function (movie) {
                 option = document.createElement("option");
-                option.text = movie;
+                option.text = json[movie];
                 select.add(option);
             });
 

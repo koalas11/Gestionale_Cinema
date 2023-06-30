@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,30 +32,86 @@ public class SampleClient {
             // Wait for the connection to be established
             while(!socket.isConnected());
 
+            System.out.println("1");
+            HashMap<String, Integer> seats = new HashMap<String, Integer>();
+            seats.put("h1", 91);
+            seats.put("h2", 91);
+            seats.put("h3", 91);
+            seats.put("h4", 91);
+            seats.put("h5", 91);
+
             // Create input and output streams for communication
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             
-            Iterator<JsonNode> it = null;
             // convert a JSON string to an ObjectNode
             preloadedJson = mapper.readValue(Paths.get(System.getProperty("user.dir") + PATH).toFile(), ObjectNode.class);
 
             // get data from the JSON file
-            ArrayNode movies = (ArrayNode) preloadedJson.get("movies");
-            it = movies.elements();
+            Iterator<Map.Entry<String,JsonNode>> itSingle = preloadedJson.get("single").fields();
+            Iterator<Map.Entry<String,JsonNode>> itMovies = preloadedJson.get("movies").fields();
 
-            int index = 0;
-            String temp = null;
-            String command = "madd movies";
-            while (it.hasNext()) {
-                temp = it.next().asText();
-                command += " " + temp;
-                out.println("set m" + index + " " + temp);
+            String key = null;
+            Map.Entry<String,JsonNode> entry;
+            JsonNode value;
+            
+            System.out.println("2");
+            while (itSingle.hasNext()) {
+                entry = itSingle.next();
+                key = entry.getKey();
+                value = entry.getValue();
+
+                out.println("set " + key + " " + value.asText());
                 in.readLine();
             }
-            System.out.println(command);
-            out.println(command);
-            in.readLine();
+
+            Iterator<JsonNode> dates;
+            Iterator<JsonNode> times;
+            Iterator<JsonNode> halls;
+
+            System.out.println("3");
+            while (itMovies.hasNext()) {
+                entry = itMovies.next();
+                key = entry.getKey();
+                value = entry.getValue();
+
+                out.println("set " + key + " \"" + value.get("name").asText() + "\"");
+                in.readLine();
+
+                dates = value.get("dates").elements();
+                times = value.get("times").elements();
+                halls = value.get("halls").elements();
+                String date, time, hall, hallFull, string;
+
+                while (dates.hasNext()) {
+                    date = key + dates.next().asText();
+                    out.println("add " + key + " " + date);
+                    in.readLine();
+
+                    while (times.hasNext()) {
+                        time = date + times.next().asText();
+                        out.println("add " + date + " " + time);
+                        in.readLine();
+
+                        while (halls.hasNext()) {
+                            hall = halls.next().asText();
+                            hallFull = time + hall;
+                            out.println("add " + time + " " + hallFull);
+                            in.readLine();
+
+                            string = "";
+                            for (int i = 1; i <= seats.get(hall); i++) {
+                                string += " 0";
+                            }
+                            out.println("madd " + hallFull +  " " + string);
+                            in.readLine();
+                        }
+                    }
+                }
+
+                out.println("add movies " + key);
+                in.readLine();
+            }
 
             // Send commands to the server and read responses
 
@@ -91,6 +149,7 @@ public class SampleClient {
  
             // TODO aggiungi nel for (dinamico)
             // adding films to the database and linking an ID to the films
+            /*
             out.println("set m1 Spiderman");
             in.readLine();
             out.println("set m2 Osu");
@@ -228,6 +287,8 @@ public class SampleClient {
             //     out.println("set s" + i + " seat" + i);
             //     in.readLine();
             // }
+
+            */
 
             // Close the connection
             socket.close();

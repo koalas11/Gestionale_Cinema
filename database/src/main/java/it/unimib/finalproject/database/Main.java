@@ -60,7 +60,9 @@ public class Main {
                     }
                     
                     try {
+						System.out.println(inputLine);
                     	result = executeCommand(inputLine);
+						System.out.println(result);
                     } catch (WrongInputException e) {
                     	out.println("[false, \"" + e.getMessage() + "\"]");
                     	break;
@@ -315,7 +317,7 @@ public class Main {
         		}
         	}
         	
-			return message;
+			return message.replaceAll("\"+", "\"");
         }
 		
         /**

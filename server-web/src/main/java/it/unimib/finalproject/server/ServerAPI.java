@@ -38,6 +38,9 @@ public class ServerAPI {
             // send command to the database and read responses
             json = sendRequest("getall movies", in, out);
             response = json.get(1);
+            String command = makeCommand("mget", response.get("movies"));
+            json = sendRequest(command, in, out);
+            response = json.get(1);
 
             closeConnection(in, out, socket);
         } catch (IOException e) {
@@ -104,7 +107,7 @@ public class ServerAPI {
                 closeConnection(in, out, socket);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            String request = makeCommand("mget", response.get(id));
+            String request = makeCommand("mget", response.get(id)).replace(id, "");
 
             response = sendRequest(request, in, out).get(1);
 
@@ -140,18 +143,19 @@ public class ServerAPI {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            String totalId = id + dateID;
             // send command to the database and read responses
-            json = sendRequest("getall " + dateID, in, out);
+            json = sendRequest("getall " + totalId, in, out);
             response = json.get(1);
 
-            if (response == null || !response.hasNonNull(dateID)) {
+            if (response == null || !response.hasNonNull(totalId)) {
                 closeConnection(in, out, socket);
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
 
-            String request = makeCommand("mget", response.get(dateID));
+            String request = makeCommand("mget", response.get(totalId)).replace(totalId, "");
 
-            response = sendRequest(request, in, out).get(1);
+            response = sendRequest(request, in, out);
 
             if (response == null) {
                 closeConnection(in, out, socket);
@@ -163,7 +167,7 @@ public class ServerAPI {
             e.printStackTrace();
         }
 
-        return Response.ok(response).build();
+        return Response.ok(response.get(1)).build();
     }
 
     /**
@@ -353,13 +357,8 @@ public class ServerAPI {
         }
 
         return Response.ok(response).build();
-        
-
-
-    
     }
-
-
+    
 
 
     /*
@@ -386,9 +385,9 @@ public class ServerAPI {
     private String makeCommand(String string, JsonNode json) {
         if (string == null || json == null)
             return null;
-
         Iterator<JsonNode> it = json.elements();
 
+        
         while (it.hasNext()) {
             string += " " + it.next().asText();
         }

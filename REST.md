@@ -2,9 +2,9 @@
 
 Documentazione delle API REST di esempio. Si assume che i dati vengano scambiati in formato JSON.
 
-## `/contacts`
+## `/movies`
 
-Ogni risorsa ha la sua sezione. In questo caso la risorsa da documentare è quella dei contatti.
+Ogni risorsa ha la sua sezione. Per ogni risorsa vengono descritti i metodi disponibili, i parametri, il body della richiesta, la risposta e i codici di stato restituiti.
 
 ### GET
 
