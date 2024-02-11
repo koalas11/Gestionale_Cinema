@@ -1,4 +1,7 @@
 # Progetto Sistemi Distribuiti 2022-2023
+## Screenshot
+![alt text](https://github.com/koalas11/Gestionale_Cinema/blob/main/screenshots/base.jpg)
+
 ## Componenti del gruppo
 
 * Marco Sanvito (886493) m.sanvito17@campus.unimib.it
