@@ -4,9 +4,9 @@
 
 ## Componenti del gruppo
 
-* Marco Sanvito (886493) m.sanvito17@campus.unimib.it
-* Emre Tugrul (886027) e.tugrul@campus.unimib.it
-* Andrea Falbo (887525) a.falbo7@campus.unimib.it
+* [Marco Sanvito](https://github.com/koalas11)
+* [Emre Tugrul](https://github.com/Mrahh)
+* [Andrea Falbo](https://github.com/LilQuacky)
 
 ## Compilazione ed esecuzione
 
